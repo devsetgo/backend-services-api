@@ -20,19 +20,9 @@ from endpoints.users.models import UserCreate  # , UserUpdate,User, UserInDB
 
 router = APIRouter()
 
-title = "Delay in Seconds"
-
 
 @router.get("/list", tags=["users"])
 async def user_list(
-    delay: int = Query(
-        None,
-        title=title,
-        description="Seconds to delay (max 121)",
-        ge=1,
-        le=121,
-        alias="delay",
-    ),
     qty: int = Query(
         None,
         title="Quanity",
@@ -51,7 +41,7 @@ async def user_list(
     list of users
 
     Keyword Arguments:
-        delay {int} -- [description] 0 seconds default, maximum is 122
+
         qty {int} -- [description] 100 returned results is default, maximum is 500
         offset {int} -- [description] 0 seconds default
         Active {bool} -- [description] no default as not required, must be Active=true or false if used
@@ -59,9 +49,6 @@ async def user_list(
     Returns:
         dict -- [description]
     """
-    # sleep if delay option is used
-    if delay is not None:
-        asyncio.sleep(delay)
 
     if qty is None:
         qty: int = 100
@@ -115,7 +102,6 @@ async def user_list(
             "total_count": len(total_count),
             "offset": offset,
             "filter": is_active,
-            "delay": delay,
         },
         "users": result_set,
     }
@@ -132,22 +118,18 @@ async def user_list(
     },
 )
 async def users_list_count(
-    delay: int = Query(None, title=title, ge=1, le=10, alias="delay",),
     is_active: bool = Query(None, title="by active status", alias="active"),
 ) -> dict:
     """
     Count of users in the database
 
     Keyword Arguments:
-        delay {int} -- [description] 0 seconds default, maximum is 122
+
         Active {bool} -- [description] no default as not required, must be Active=true or false if used
 
     Returns:
         dict -- [description]
     """
-    # sleep if delay option is used
-    if delay is not None:
-        asyncio.sleep(delay)
 
     try:
         # Fetch multiple rows
@@ -167,22 +149,16 @@ async def users_list_count(
 @router.get("/{user_id}", tags=["users"], response_description="Get user information")
 async def get_user_id(
     user_id: str = Path(..., title="The user id to be searched for", alias="user_id"),
-    delay: int = Query(None, title=title, ge=1, le=121, alias="delay",),
 ) -> dict:
     """
     User information for requested UUID
 
     Keyword Arguments:
         user_id {str} -- [description] UUID of user_id property required
-        delay {int} -- [description] 0 seconds default, maximum is 122
-
 
     Returns:
         dict -- [description]
     """
-    # sleep if delay option is used
-    if delay is not None:
-        asyncio.sleep(delay)
 
     try:
         # Fetch single row
@@ -225,24 +201,18 @@ async def get_user_id(
     },
 )
 async def deactivate_user_id(
-    *,
-    user_id: str = Path(..., title="The user id to be deactivated", alias="user_id"),
-    delay: int = Query(None, title=title, ge=1, le=10, alias="delay",),
+    *, user_id: str = Path(..., title="The user id to be deactivated", alias="user_id"),
 ) -> dict:
     """
     Deactivate a specific user UUID
 
     Keyword Arguments:
         user_id {str} -- [description] UUID of user_id property required
-        delay {int} -- [description] 0 seconds default, maximum is 122
 
     Returns:
         dict -- [description]
     """
     user_information = {"is_active": False, "date_updated": get_current_datetime()}
-    # sleep if delay option is used
-    if delay is not None:
-        asyncio.sleep(delay)
 
     try:
         # Fetch single row
@@ -299,11 +269,7 @@ async def delete_user_id(
         500: {"description": "Mommy!"},
     },
 )
-async def create_user(
-    *,
-    user: UserCreate,
-    delay: int = Query(None, title=title, ge=1, le=10, alias="delay",),
-) -> dict:
+async def create_user(*, user: UserCreate,) -> dict:
     """
     POST/Create a new User. user_name (unique), firstName, lastName,
     and password are required. All other fields are optional.
@@ -312,7 +278,6 @@ async def create_user(
         user {UserCreate} -- [description]
 
     Keyword Arguments:
-        delay {int} -- [description] 0 seconds default, maximum is 122
 
     Returns:
         dict -- [user_id: uuid, user_name: user_name]
@@ -340,10 +305,6 @@ async def create_user(
         "is_active": True,
         "is_superuser": False,
     }
-
-    # sleep if delay option is used
-    if delay is not None:
-        asyncio.sleep(delay)
 
     try:
         query = users.insert()

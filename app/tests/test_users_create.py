@@ -41,7 +41,7 @@ class Test(unittest.TestCase):
     def test_users_post(self):
         test_user = user_test_info()
         save_json("test_data_test_user.json", test_user)
-        url = f"/api/v1/users/create/?delay=1"
+        url = f"/api/v1/users/create/"
 
         response = client.post(url, json=test_user)
         assert response.status_code == 200
@@ -57,7 +57,7 @@ class Test(unittest.TestCase):
 
     def test_users_post_two(self):
         test_user = user_test_info()
-        url = f"/api/v1/users/create/?delay=1"
+        url = f"/api/v1/users/create/"
 
         response = client.post(url, json=test_user)
         assert response.status_code == 200

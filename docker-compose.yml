@@ -4,28 +4,25 @@ networks:
     external: true
 
 services:
-  test-api:
+  backend-services:
     # build: ./app
-    # image: mikeryan56/test-api:19.09.15
-    image: mikeryan56/test-api:latest
+    # image: mikeryan56/backend-services:19.09.15
+    image: mikeryan56/backend-services:latest
     ports:
     - "5000"
     volumes:
     - .:/code
-
-    # if using jwilder/nginx-proxy
-    # environment:
-    #   VIRTUAL_HOST: test-api.devsetgo.com
-    #   LETSENCRYPT_HOST: test-api.devsetgo.com
-
-    #if using traefik
     labels:
-    - "traefik.enable=true"
-    - "traefik.http.routers.test-api.rule=Host(`test-api.devsetgo.com`)"
-    - "traefik.http.routers.test-api.entrypoints=websecure"
-    - "traefik.http.routers.test-api.tls.certresolver=mytlschallenge"
+    - "traefik.enable=true" # <== Enable traefik to proxy this container
+    - "traefik.http.routers.backend-services-web.rule=Host(`backend-services.devsetgo.com`)" # <== Your Domain Name goes here for the http rule
+    - "traefik.http.routers.backend-services-web.entrypoints=web" # <== Defining the entrypoint for http, **ref: line 30
+    - "traefik.http.routers.backend-services-web.middlewares=redirect@file" # <== This is a middleware to redirect to https
+    - "traefik.http.routers.backend-services-secured.rule=Host(`backend-services.devsetgo.com`)" # <== Your Domain Name for the https rule
+    - "traefik.http.routers.backend-services-secured.entrypoints=web-secured" # <== Defining entrypoint for https, **ref: line 31
+    - "traefik.http.routers.backend-services-secured.tls.certresolver=mytlschallenge" # <== Defining certsresolvers for https
     networks:
       - web
+      - backend
     # restart:
     #   - "always"
     # healthcheck:
@@ -39,3 +36,8 @@ services:
   #      limits:
   #        cpus: "2"
   #        memory: 100M
+networks:
+  web:
+    external: true
+  backend:
+    external: false

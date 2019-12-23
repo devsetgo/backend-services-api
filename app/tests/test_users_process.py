@@ -29,14 +29,9 @@ class Test(unittest.TestCase):
         response = client.get(f"api/v1/users/list/count")
         assert response.status_code == 200
 
-    def test_users_count_complete_delay(self):
-
-        response = client.get(f"api/v1/users/list/count?delay=1&active=true")
-        assert response.status_code == 200
-
     def test_users_list_params(self):
 
-        response = client.get(f"api/v1/users/list?delay=1&qty=100&offset=1&active=true")
+        response = client.get(f"api/v1/users/list?qty=100&offset=1&active=true")
         assert response.status_code == 200
 
     def test_users_list_offset(self):
@@ -58,13 +53,8 @@ class Test(unittest.TestCase):
 
     def test_users_list_options(self):
 
-        response = client.get(f"/api/v1/users/list?delay=1&qty=2&active=true")
+        response = client.get(f"/api/v1/users/list?qty=2&active=true")
         assert response.status_code == 200
-
-    def test_users_error_delay(self):
-
-        response = client.get(f"/api/v1/users/list?delay=122")
-        assert response.status_code == 422
 
     def test_users_id(self):
         user_id = open_json(test_data_users)
@@ -75,14 +65,8 @@ class Test(unittest.TestCase):
         assert state is 200
         assert response.json() is not None
 
-    def test_users_id_delay(self):
-        user_id = open_json(test_data_users)
-
-        response = client.get(f"/api/v1/users/{user_id['user_id']}?delay=1")
-        assert response.status_code == 200
-
     def test_users_put_deactivate(self):
         user_id = open_json(test_data_users)
 
-        response = client.put(f"/api/v1/users/deactivate/{user_id['user_id']}?delay=1")
+        response = client.put(f"/api/v1/users/deactivate/{user_id['user_id']}")
         assert response.status_code == 200

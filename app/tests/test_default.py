@@ -13,11 +13,6 @@ class Test(unittest.TestCase):
         response = client.get("/")
         assert response.status_code == 200
 
-    def test_joke(self):
-        response = client.get("/joke")
-        assert response.status_code == 200
-        assert response.json is not None
-
     def test_information(self):
         response = client.get("/information")
         assert response.status_code == 200
