@@ -1,10 +1,16 @@
+test-api.db
+env/
+htmlcov/
+.env_sample
+coverage.xml
+.coverage
+.github
+
 # ignore project files
-.env
 settings.json
 scratch_pad/
 .vscode
-flake8_report/
-_venv/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -89,7 +95,6 @@ celerybeat-schedule
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/

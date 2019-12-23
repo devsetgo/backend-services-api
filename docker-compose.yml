@@ -1,0 +1,41 @@
+version: '3'
+networks:
+  web:
+    external: true
+
+services:
+  test-api:
+    # build: ./app
+    # image: mikeryan56/test-api:19.09.15
+    image: mikeryan56/test-api:latest
+    ports:
+    - "5000"
+    volumes:
+    - .:/code
+
+    # if using jwilder/nginx-proxy
+    # environment:
+    #   VIRTUAL_HOST: test-api.devsetgo.com
+    #   LETSENCRYPT_HOST: test-api.devsetgo.com
+
+    #if using traefik
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.test-api.rule=Host(`test-api.devsetgo.com`)"
+    - "traefik.http.routers.test-api.entrypoints=websecure"
+    - "traefik.http.routers.test-api.tls.certresolver=mytlschallenge"
+    networks:
+      - web
+    # restart:
+    #   - "always"
+    # healthcheck:
+    #   test: curl --fail -s http://localhost:5000/ || exit 1
+    #   interval: 1m30s
+    #   timeout: 10s
+    #   retries: 3
+  # deploy:
+  #    replicas: 2
+  #    resources:
+  #      limits:
+  #        cpus: "2"
+  #        memory: 100M

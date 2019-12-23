@@ -1,0 +1,25 @@
+repos:
+-   repo: https://github.com/ambv/black
+    rev: stable
+    hooks:
+    - id: black
+      language_version: python3.6
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: fix-encoding-pragma
+      - id: trailing-whitespace
+      # - id: check-json
+      # - id: pretty-format-json
+      - id: requirements-txt-fixer
+
+# -   repo: git://github.com/doublify/pre-commit-isort
+#     sha: master
+#     hooks:
+#     -   id: isort
+
+      # - id: flake8
+# -   repo: https://github.com/pre-commit/mirrors-isort
+#     rev: 'v4.3.21'  # Use the revision sha / tag you want to point at
+#     hooks:
+#     -   id: isort
