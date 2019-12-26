@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from fastapi import APIRouter
-from fastapi import File
-from fastapi import HTTPException
-from fastapi import UploadFile
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from loguru import logger
 from xmltodict import parse as xml_parse
 from xmltodict import unparse as xml_unparse

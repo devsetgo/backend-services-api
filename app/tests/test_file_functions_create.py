@@ -4,9 +4,7 @@ import unittest
 
 import pytest
 
-from com_lib.file_functions import save_csv
-from com_lib.file_functions import save_json
-from com_lib.file_functions import save_text
+from com_lib.file_functions import save_csv, save_json, save_text
 
 time_str = datetime.datetime.now()
 

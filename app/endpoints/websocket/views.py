@@ -2,16 +2,13 @@
 from enum import Enum
 from typing import List
 
-from fastapi import APIRouter
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
 from starlette.endpoints import WebSocketEndpoint
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import FileResponse
-from starlette.types import ASGIApp
-from starlette.types import ASGIInstance
-from starlette.types import Scope
+from starlette.types import ASGIApp, ASGIInstance, Scope
 from starlette.websockets import WebSocket
 
 router = APIRouter()

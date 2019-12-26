@@ -1,28 +1,28 @@
 # -*- coding: utf-8 -*-
 import pyjokes
 import uvicorn
-from fastapi import FastAPI
-from fastapi import Query
+from fastapi import FastAPI, Query
 from loguru import logger
 from starlette.responses import RedirectResponse
 
 from com_lib.demo_data import create_data
 from com_lib.logging_config import config_logging
-from db_setup import create_db
-from db_setup import database
+from db_setup import create_db, database
 from endpoints.configuration import views as config_app
 from endpoints.sillyusers import views as silly_users
 from endpoints.tools import views as tools
 from endpoints.users import views as users
 from health import views as health
-from settings import APP_VERSION
-from settings import CREATE_SAMPLE_DATA
-from settings import HOST_DOMAIN
-from settings import LICENSE_LINK
-from settings import LICENSE_TYPE
-from settings import OWNER
-from settings import RELEASE_ENV
-from settings import WEBSITE
+from settings import (
+    APP_VERSION,
+    CREATE_SAMPLE_DATA,
+    HOST_DOMAIN,
+    LICENSE_LINK,
+    LICENSE_TYPE,
+    OWNER,
+    RELEASE_ENV,
+    WEBSITE,
+)
 
 # config logging start
 config_logging()

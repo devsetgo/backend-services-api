@@ -5,17 +5,12 @@ doc string
 import asyncio
 import uuid
 
-from fastapi import APIRouter
-from fastapi import Form
-from fastapi import Path
-from fastapi import Query
+from fastapi import APIRouter, Form, Path, Query
 from loguru import logger
 
-from com_lib.pass_lib import encrypt_pass
-from com_lib.pass_lib import verify_pass
+from com_lib.pass_lib import encrypt_pass, verify_pass
 from com_lib.simple_functions import get_current_datetime
-from db_setup import database
-from db_setup import users
+from db_setup import database, users
 from endpoints.users.models import UserCreate  # , UserUpdate,User, UserInDB
 
 router = APIRouter()
@@ -61,7 +56,7 @@ async def user_list(
         query = (
             users.select()
             .where(users.c.is_active == is_active)
-            .order_by(users.c.date_create)
+            .order_by(users.c.date_created)
             .limit(qty)
             .offset(offset)
         )
@@ -70,15 +65,15 @@ async def user_list(
         count_query = (
             users.select()
             .where(users.c.is_active == is_active)
-            .order_by(users.c.date_create)
+            .order_by(users.c.date_created)
         )
         total_count = await database.fetch_all(count_query)
 
     else:
 
-        query = users.select().order_by(users.c.date_create).limit(qty).offset(offset)
+        query = users.select().order_by(users.c.date_created).limit(qty).offset(offset)
         db_result = await database.fetch_all(query)
-        count_query = users.select().order_by(users.c.date_create)
+        count_query = users.select().order_by(users.c.date_created)
         total_count = await database.fetch_all(count_query)
 
     result_set = []
@@ -101,7 +96,7 @@ async def user_list(
             "qty": qty,
             "total_count": len(total_count),
             "offset": offset,
-            "filter": is_active,
+            "filter_active_status": is_active,
         },
         "users": result_set,
     }
@@ -179,7 +174,7 @@ async def get_user_id(
             "email": db_result["email"],
             "website": db_result["website"],
             "description": db_result["description"],
-            "date_create": db_result["date_create"],
+            "date_created ": db_result["date_created "],
             "date_updated": db_result["date_updated"],
             "is_active": db_result["is_active"],
         }
@@ -300,7 +295,7 @@ async def create_user(*, user: UserCreate,) -> dict:
         "email": value["email"],
         "website": value["website"],
         "description": value["description"],
-        "date_create": get_current_datetime(),
+        "date_created ": get_current_datetime(),
         "date_updated": get_current_datetime(),
         "is_active": True,
         "is_superuser": False,
