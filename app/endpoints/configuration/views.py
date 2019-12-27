@@ -353,8 +353,6 @@ async def create_configuration(new_config: AppConfigurationBase) -> dict:
         logger.error(f"Error: 'configuration_data' cannot be empty")
         raise HTTPException(status_code=400, detail=detail)
 
-    config_data = json.dumps(value["configuration_data"])
-
     create_new_config = {
         "config_id": str(uuid.uuid4()),
         "config_name": value["config_name"],
