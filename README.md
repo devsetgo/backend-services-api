@@ -5,23 +5,22 @@ Python:
 [![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
 
 CI/CD Pipeline:
-[![codecov](https://codecov.io/gh/devsetgo/test-api/branch/master/graph/badge.svg)](https://codecov.io/gh/devsetgo/test-api)
-[![Actions Status](https://github.com/devsetgo/test-api/workflows/Run%20Tests/badge.svg)](https://github.com/devsetgo/test-api/actions)
-[![Actions Status](https://github.com/devsetgo/test-api/workflows/Docker%20RC/badge.svg)](https://github.com/devsetgo/test-api/actions)
-[![Actions Status](https://github.com/devsetgo/test-api/workflows/Docker%20Latest/badge.svg)](https://github.com/devsetgo/test-api/actions)
+[![codecov](https://codecov.io/gh/devsetgo/backend-services-api/branch/master/graph/badge.svg)](https://codecov.io/gh/devsetgo/backend-services-api)
+[![Actions Status](https://github.com/devsetgo/backend-services-api/workflows/Run%20Tests/badge.svg)](https://github.com/devsetgo/backend-services-api/actions)
+[![Actions Status](https://github.com/devsetgo/backend-services-api/workflows/Docker%20RC/badge.svg)](https://github.com/devsetgo/backend-services-api/actions)
+[![Actions Status](https://github.com/devsetgo/backend-services-api/workflows/Docker%20Latest/badge.svg)](https://github.com/devsetgo/backend-services-api/actions)
 
 
 SonarCloud:
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_test-api&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=devsetgo_test-api)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_test-api&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=devsetgo_test-api)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_test-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=devsetgo_test-api)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_test-api&metric=bugs)](https://sonarcloud.io/dashboard?id=devsetgo_test-api)
-![Docker Image](https://img.shields.io/docker/pulls/mikeryan56/test-api)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_backend-services-api&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=devsetgo_backend-services-api)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_backend-services-api&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=devsetgo_backend-services-api)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_backend-services-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=devsetgo_backend-services-api)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_backend-services-api&metric=bugs)](https://sonarcloud.io/dashboard?id=devsetgo_backend-services-api)
+![Docker Image](https://img.shields.io/docker/pulls/mikeryan56/backend-services-api)
 
-# Test-API a FASTAPI Example
+# Backend-Services-API
 
-A test/psuedo API to use as sample data or test data. Inspired by [FakeResponse.com](http://www.fakeresponse.com/). Documentation can be found at [devsetgo.com/projects/test-api](https://devsetgo.com/projects/test-api).
-
+This is a way to serve configurations over a REST API similar to how Spring Cloud Config works. 
 
 ### Note
 - This requires a *Nix environment to run. (Linux, Unix, Windows 10 WSL (unbuntu tested) and I think Mac OS (I don't use a Mac)
@@ -31,7 +30,7 @@ A test/psuedo API to use as sample data or test data. Inspired by [FakeResponse.
 
 - Copy the repo
   ~~~~
-  git clone https://github.com/devsetgo/test-api.git
+  git clone https://github.com/devsetgo/backend-services-api.git
   python3.7 -m venv env
   source env/bin/activate
   cd app
@@ -73,7 +72,7 @@ LOGURU_ROTATION='100 MB'
 # Leave intact for license
 CREATED_BY='Mike Ryan'
 LICENSE_TYPE='MIT'
-LICENSE_LINK='https://github.com/devsetgo/test-api/blob/master/LICENSE'
+LICENSE_LINK='https://github.com/devsetgo/backend-services-api/blob/master/LICENSE'
 
 ~~~~
 
@@ -91,7 +90,7 @@ UVICORN
         # Note: gunicorn is the config for the dockerfile
 
 Docker
-    Docker: docker pull mikeryan56/test-api:latest
+    Docker: docker pull mikeryan56/backend-services-api:latest
 ~~~~
 
 Run Tests
