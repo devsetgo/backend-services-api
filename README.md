@@ -20,7 +20,7 @@ SonarCloud:
 
 # Backend-Services-API
 
-This is a way to serve configurations over a REST API similar to how Spring Cloud Config works. 
+This is a way to serve configurations over a REST API similar to how Spring Cloud Config works.
 
 ### Note
 - This requires a *Nix environment to run. (Linux, Unix, Windows 10 WSL (unbuntu tested) and I think Mac OS (I don't use a Mac)

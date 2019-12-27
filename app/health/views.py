@@ -31,7 +31,8 @@ class HealthChecks:
         GET Request for CPU and process data
 
         Returns:
-            dict -- [current_datetime: datetime.now, system information: Python and System Information]
+            dict -- [current_datetime: datetime.now, system information:
+             Python and System Information]
         """
 
         try:

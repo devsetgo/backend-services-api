@@ -1,14 +1,7 @@
 # -*- coding: utf-8 -*-
-import asyncio
-import json
-import uuid
 
-from fastapi import APIRouter, File, HTTPException, Path, Query, UploadFile
-from loguru import logger
 
-from com_lib.simple_functions import get_current_datetime
-from db_setup import app_config, database
-from endpoints.configuration.models import AppConfigurationBase, ConfigUpdate
+from db_setup import database
 
 
 async def fetch_one_db(query):

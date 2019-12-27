@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import unittest
 from random import randint
+
 from starlette.testclient import TestClient
 
 from app.com_lib.file_functions import save_json
-from app.endpoints.sillyusers.gen_user import user_test_info
 from app.main import app
 
 client = TestClient(app)

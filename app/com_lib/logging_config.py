@@ -3,7 +3,8 @@ from pathlib import Path
 
 from loguru import logger
 
-from settings import LOGURU_RETENTION, LOGURU_ROTATION
+from settings import LOGURU_RETENTION
+from settings import LOGURU_ROTATION
 
 
 def config_logging():

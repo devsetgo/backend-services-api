@@ -3,7 +3,7 @@ import unittest
 
 from starlette.testclient import TestClient
 
-from app.com_lib.file_functions import save_json, open_json
+from app.com_lib.file_functions import open_json
 from app.main import app
 
 client = TestClient(app)
@@ -133,8 +133,6 @@ class Test(unittest.TestCase):
         assert response.status_code == 400
         # assert data['detail'] == "Either config_id or config_name must be used."
 
-
-
     def test_config_update_name_id_error(self):
         send_data = {
             "configuration_data": {"this": "and", "and": "that"},
@@ -162,7 +160,6 @@ class Test(unittest.TestCase):
         assert response.status_code == 400
         assert data["detail"] == "Either config_id or config_name must be used."
 
-
     def test_config_active_status_id(self):
         test_data = open_json("test_data_config.json")
         config_name = test_data["config_name"]
@@ -180,23 +177,25 @@ class Test(unittest.TestCase):
         response = client.put(url)
         data = response.json()
         assert response.status_code == 200
-        
 
     def test_config_active_status_name_active(self):
         test_data = open_json("test_data_config.json")
         config_name = test_data["config_name"]
         config_id = test_data["config_id"]
-        url = f"api/v1/configuration/active-status?config_name={config_name}&active=true"
+        url = (
+            f"api/v1/configuration/active-status?config_name={config_name}&active=true"
+        )
         response = client.put(url)
         data = response.json()
         assert response.status_code == 200
-
 
     def test_config_active_status_name_deactive(self):
         test_data = open_json("test_data_config.json")
         config_name = test_data["config_name"]
         config_id = test_data["config_id"]
-        url = f"api/v1/configuration/active-status?config_name={config_name}&active=false"
+        url = (
+            f"api/v1/configuration/active-status?config_name={config_name}&active=false"
+        )
         response = client.put(url)
         data = response.json()
         assert response.status_code == 200
@@ -217,8 +216,8 @@ class Test(unittest.TestCase):
         assert response.status_code == 400
 
     def test_config_active_status_id_error(self):
-        
-        config_id = '1'
+
+        config_id = "1"
         url = f"api/v1/configuration/active-status?config_id={config_id}"
         response = client.put(url)
         assert response.status_code == 404

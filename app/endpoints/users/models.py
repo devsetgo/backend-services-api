@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from typing import Optional
 
-from pydantic import BaseModel, SecretStr, Field, EmailStr
+from pydantic import BaseModel
+from pydantic import EmailStr
+from pydantic import SecretStr
 
 
 # Shared properties

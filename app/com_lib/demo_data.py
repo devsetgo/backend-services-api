@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 import time
 import uuid
-from datetime import datetime, timedelta
-from random import randint, random
-import string
+from datetime import datetime
+from random import randint
 
 import silly
-from fastapi import BackgroundTasks
 from loguru import logger
-from starlette.testclient import TestClient
 from unsync import unsync
 
 from com_lib.simple_functions import get_current_datetime
 
 # from db_setup import todos
-from db_setup import app_config, database, users
+from db_setup import app_config
+from db_setup import database
+from db_setup import users
 from endpoints.sillyusers.gen_user import user_test_info
-from settings import NUMBER_CONFIG, NUMBER_USERS, CREATE_SAMPLE_DATA
+from settings import NUMBER_CONFIG
+from settings import NUMBER_USERS
 
 number_of_config = NUMBER_CONFIG
 number_of_users = NUMBER_USERS

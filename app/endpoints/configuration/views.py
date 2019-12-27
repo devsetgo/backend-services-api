@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
-import asyncio
 import json
 import uuid
 
-from fastapi import APIRouter, File, HTTPException, Path, Query, UploadFile
+from fastapi import APIRouter
+from fastapi import HTTPException
+from fastapi import Query
 from loguru import logger
 
 from com_lib.simple_functions import get_current_datetime
-from db_setup import app_config, database
-from endpoints.configuration.models import AppConfigurationBase, ConfigUpdate
-from endpoints.configuration.crud_ops import fetch_one_db, fetch_all_db, execute_one_db
+from db_setup import app_config
+from endpoints.configuration.crud_ops import execute_one_db
+from endpoints.configuration.crud_ops import fetch_all_db
+from endpoints.configuration.crud_ops import fetch_one_db
+from endpoints.configuration.models import AppConfigurationBase
+from endpoints.configuration.models import ConfigUpdate
 
 router = APIRouter()
 

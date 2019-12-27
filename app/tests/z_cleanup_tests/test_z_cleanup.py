@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
-import csv
 import unittest
 
 from com_lib.file_functions import delete_file

@@ -6,7 +6,8 @@ import sys
 import psutil
 
 # TODO: Make a status that gets app uptime
-# BODY: how to get uptime of app, not running os. Such as dockerimage or how long the code has been running.
+# BODY: how to get uptime of app, not running os.
+#  Such as dockerimage or how long the code has been running.
 
 
 def get_platform() -> dict:
@@ -32,7 +33,8 @@ def get_platform() -> dict:
     friendly_maxsize = {2 ** 31 - 1: "32 bit", 2 ** 63 - 1: "64 bit"}.get(
         sys.maxsize
     ) or "unknown bits"
-    friendly_version = f"{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3]}"
+    friendly_version = f"{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}\
+         {sys.version_info[3]}"
     python_version = "{0} ({1})".format(friendly_version, friendly_maxsize)
 
     result = {
