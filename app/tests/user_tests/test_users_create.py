@@ -50,7 +50,10 @@ class Test(unittest.TestCase):
         user_data = {
             "user_id": data["user_id"],
             "user_name": data["user_name"],
+            "first_name": test_user["first_name"],
+            "last_name": test_user["last_name"],
             "password": test_user["password"],
+            "email": test_user["email"],
         }
 
         save_json("test_data_users.json", user_data)

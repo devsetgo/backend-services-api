@@ -181,7 +181,7 @@ async def get_confg_id(
 
     # Fetch single row
     if config_name is not None:
-        query = app_config.select().where(app_config.c.config_id == config_id)
+        query = app_config.select().where(app_config.c.config_name == config_name)
     if config_id is not None:
         query = app_config.select().where(app_config.c.config_id == config_id)
 

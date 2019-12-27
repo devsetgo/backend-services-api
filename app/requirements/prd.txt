@@ -4,6 +4,7 @@ asyncpg==0.20.0 # Change from 0.18.3
 databases==0.2.6 # Change from 0.2.5
 fastapi-login==1.1.0
 fastapi[all]==0.44.0 # Change from 0.38.1
+gitpython==3.0.5
 gunicorn==20.0.4 # Change from 19.9.0
 loguru==0.3.2
 passlib[bcrypt] # do not change from this

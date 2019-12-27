@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Optional
 
-from pydantic import BaseModel, SecretStr, Field
+from pydantic import BaseModel, SecretStr, Field, EmailStr
 
 
 # Shared properties
@@ -16,7 +16,7 @@ class UserBase(BaseModel):
     city: Optional[str] = None
     country: Optional[str] = None
     postal: Optional[str] = None
-    email: Optional[str] = None
+    email: EmailStr
     website: Optional[str] = None
     description: Optional[str] = None
 
@@ -39,7 +39,7 @@ class UserCreate(UserBase):
     country: Optional[str] = None
     phone: Optional[str] = None
     postal: Optional[str] = None
-    email: Optional[str] = None
+    email: EmailStr
     website: Optional[str] = None
     description: Optional[str] = None
 
@@ -64,7 +64,7 @@ class UserUpdate(UserBaseInDB):
     city: Optional[str] = None
     country: Optional[str] = None
     postal: Optional[str] = None
-    email: Optional[str] = None
+    email: EmailStr
     website: Optional[str] = None
     description: Optional[str] = None
 
@@ -78,7 +78,7 @@ class UserList(UserBaseInDB):
     city: Optional[str] = None
     country: Optional[str] = None
     postal: Optional[str] = None
-    email: Optional[str] = None
+    email: EmailStr
     website: Optional[str] = None
     description: Optional[str] = None
     is_active: bool = True

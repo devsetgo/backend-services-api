@@ -174,7 +174,7 @@ async def get_user_id(
             "email": db_result["email"],
             "website": db_result["website"],
             "description": db_result["description"],
-            "date_created ": db_result["date_created "],
+            "date_created": db_result["date_created"],
             "date_updated": db_result["date_updated"],
             "is_active": db_result["is_active"],
         }
@@ -295,7 +295,7 @@ async def create_user(*, user: UserCreate,) -> dict:
         "email": value["email"],
         "website": value["website"],
         "description": value["description"],
-        "date_created ": get_current_datetime(),
+        "date_created": get_current_datetime(),
         "date_updated": get_current_datetime(),
         "is_active": True,
         "is_superuser": False,
@@ -342,6 +342,7 @@ async def check_pwd(user_name: str = Form(...), password: str = Form(...)) -> di
         query = users.select().where(users.c.user_name == user_name.lower())
         db_result = await database.fetch_one(query)
         result = verify_pass(password, db_result["password"])
+        print(result)
         logger.info(f"password validation: user: {user_name.lower()} as {result}")
         return {"result": result}
 

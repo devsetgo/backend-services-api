@@ -15,8 +15,11 @@ test_data_users = "test_data_users.json"
 
 class Test(unittest.TestCase):
     def test_user_password(self):
-        user_id = open_json(test_data_users)
-        test_data = {"user_name": user_id["user_name"], "password": user_id["password"]}
+        user_data = open_json(test_data_users)
+        test_data = {
+            "user_name": user_data["user_name"],
+            "password": user_data["password"],
+        }
         url = f"/api/v1/users/check-pwd/"
 
         response = client.post(url, data=test_data)
