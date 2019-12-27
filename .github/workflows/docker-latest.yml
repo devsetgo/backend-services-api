@@ -21,9 +21,9 @@ jobs:
         cd app
         CAL_VER=$(date '+%Y-%m-%d')
         echo 'Docker Build'
-        docker build . -t mikeryan56/test-api:$CAL_VER
-        docker push mikeryan56/test-api:$CAL_VER
-        docker build . -t mikeryan56/test-api:latest
-        docker push mikeryan56/test-api:latest
+        docker build . -t mikeryan56/backend-services:$CAL_VER
+        docker push mikeryan56/backend-services:$CAL_VER
+        docker build . -t mikeryan56/backend-services:latest
+        docker push mikeryan56/backend-services:latest
 
 

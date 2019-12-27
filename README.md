@@ -16,7 +16,7 @@ SonarCloud:
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_backend-services-api&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=devsetgo_backend-services-api)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_backend-services-api&metric=alert_status)](https://sonarcloud.io/dashboard?id=devsetgo_backend-services-api)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=devsetgo_backend-services-api&metric=bugs)](https://sonarcloud.io/dashboard?id=devsetgo_backend-services-api)
-![Docker Image](https://img.shields.io/docker/pulls/mikeryan56/backend-services-api)
+![Docker Image](https://img.shields.io/docker/pulls/mikeryan56/backend-services)
 
 # Backend-Services-API
 
