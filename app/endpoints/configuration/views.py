@@ -9,7 +9,7 @@ from loguru import logger
 from com_lib.simple_functions import get_current_datetime
 from db_setup import app_config, database
 from endpoints.configuration.models import AppConfigurationBase, ConfigUpdate
-
+from endpoints.configuration.crud_ops import fetch_one_db,fetch_all_db,execute_one_db
 router = APIRouter()
 
 
@@ -41,7 +41,6 @@ async def configuration_list(
     Returns:
         dict -- [description]
     """
-
     if qty is None:
         qty: int = 100
 
@@ -57,14 +56,16 @@ async def configuration_list(
             .limit(qty)
             .offset(offset)
         )
-        db_result = await database.fetch_all(query)
+        
+        db_result = await fetch_all_db(query)
 
         count_query = (
             app_config.select()
             .where(app_config.c.is_active == is_active)
             .order_by(app_config.c.date_created)
         )
-        total_count = await database.fetch_all(count_query)
+        
+        total_count = await fetch_all_db(count_query)
 
     else:
 
@@ -74,9 +75,9 @@ async def configuration_list(
             .limit(qty)
             .offset(offset)
         )
-        db_result = await database.fetch_all(query)
+        db_result = await fetch_all_db(query)
         count_query = app_config.select().order_by(app_config.c.date_created)
-        total_count = await database.fetch_all(count_query)
+        total_count = await fetch_all_db(count_query)
 
     result_set = []
     for r in db_result:
@@ -90,6 +91,7 @@ async def configuration_list(
             "date_created": r["date_created"],
             "date_updated": r["date_updated"],
             "is_active": r["is_active"],
+            "revision": r["revision"],
         }
         result_set.append(configuration_data)
 
@@ -133,11 +135,11 @@ async def configuarations_list_count(
         # Fetch multiple rows
         if is_active is not None:
             query = app_config.select().where(app_config.c.is_active == is_active)
-            x = await database.fetch_all(query)
+            x = await fetch_all_db(query)
         else:
             query = app_config.select()
-            x = await database.fetch_all(query)
-
+            x = await fetch_all_db(query)
+        logger.info(f"Cofiguration list queried")
         result = {"count": len(x)}
         return result
     except Exception as e:
@@ -145,63 +147,16 @@ async def configuarations_list_count(
 
 
 @router.get(
-    "/{config_name}",
-    tags=["configuration"],
-    response_description="Get configuration information",
-)
-async def get_confg_name(
-    config_name: str = Path(
-        ..., title="The configuration id to be searched for", alias="config_name"
-    ),
-) -> dict:
-    """
-    configuration information for requested UUID
-
-    Keyword Arguments:
-        config_name {str} -- [description] unique name of configuration required
-
-    Returns:
-        dict -- [description]
-    """
-
-    try:
-        # Fetch single row
-        query = app_config.select().where(app_config.c.config_name == config_name)
-        db_result = await database.fetch_one(query)
-
-        config_data = db_result
-        #  {
-        #     "config_id": db_result["config_id"],
-        #     "config_name": db_result["config_name"],
-        #     "first_name": db_result["first_name"],
-        #     "last_name": db_result["last_name"],
-        #     "company": db_result["company"],
-        #     "title": db_result["title"],
-        #     "address": db_result["address"],
-        #     "city": db_result["city"],
-        #     "country": db_result["country"],
-        #     "postal": db_result["postal"],
-        #     "email": db_result["email"],
-        #     "website": db_result["website"],
-        #     "description": db_result["description"],
-        #     "date_created": db_result["date_created"],
-        #     "date_updated": db_result["date_updated"],
-        #     "is_active": db_result["is_active"],
-        # }
-        return config_data
-
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
-
-
-@router.get(
-    "/{config_id}",
+    "/item",
     tags=["configuration"],
     response_description="Get configuration information",
 )
 async def get_confg_id(
-    config_id: str = Path(
-        ..., title="The configuration id to be searched for", alias="config_id"
+    config_id: str = Query(
+        None, title="The configuration id to be searched for", alias="config_id"
+    ),
+    config_name: str = Query(
+        None, title="The configuration id to be searched for", alias="config_name"
     ),
 ) -> dict:
     """
@@ -214,21 +169,35 @@ async def get_confg_id(
         dict -- [description]
     """
 
-    try:
-        # Fetch single row
+    if config_id is None and config_name is None:
+        detail = f"Either config_id or config_name must be used."
+        logger.error(f"Error: {detail}")
+        raise HTTPException(status_code=400, detail=detail)
+    elif config_id is not None and config_name is not None:
+        detail = f"Either config_id or config_name can be used."
+        logger.error(f"Error: {detail}")
+        raise HTTPException(status_code=400, detail=detail)
+
+    # Fetch single row
+    if config_name is not None:
         query = app_config.select().where(app_config.c.config_id == config_id)
-        db_result = await database.fetch_one(query)
+    if config_id is not None:
+        query = app_config.select().where(app_config.c.config_id == config_id)
 
-        config_data = db_result
+    db_result = await fetch_one_db(query)
+    
+    if db_result is None:
+        # return error if empty results
+        detail = f"No results match query criteria"
+        logger.error(f"Error: {detail}")
+        raise HTTPException(status_code=404, detail=detail)
+    
+    return db_result
 
-        return config_data
-
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
 
 
 @router.put(
-    "/update/{config_name}",
+    "/update",
     tags=["configuration"],
     response_description="The confguration",
     responses={
@@ -238,11 +207,14 @@ async def get_confg_id(
         500: {"description": "Mommy!"},
     },
 )
-async def update_config_name(
+async def update_config(
     *,
     config_update: ConfigUpdate,
-    config_name: str = Path(
-        ..., title="The configuration to be deactivated", alias="config_name"
+    config_id: str = Query(
+        None, title="The configuration id to be searched for", alias="config_id"
+    ),
+    config_name: str = Query(
+        None, title="The configuration id to be searched for", alias="config_name"
     ),
 ) -> dict:
     """
@@ -254,22 +226,53 @@ async def update_config_name(
     Returns:
         dict -- [description]
     """
+    value = config_update.dict()
+    if value["configuration"] is None:
+        detail = f"'configuration_data' cannot be empty"
+        raise HTTPException(status_code=400, detail=detail)
+
+    if config_id is None and config_name is None:
+        detail = f"Either config_id or config_name must be used."
+        logger.error(f"Error: {detail}")
+        raise HTTPException(status_code=400, detail=detail)
+    elif config_id is not None and config_name is not None:
+        detail = f"Either config_id or config_name can be used."
+        logger.error(f"Error: {detail}")
+        raise HTTPException(status_code=400, detail=detail)
+    
+    if config_name is not None:
+        fetch_query = app_config.select().where(app_config.c.config_name == config_name)
+    if config_id is not None:
+        fetch_query = app_config.select().where(app_config.c.config_id == config_id)
+
+    db_result = await fetch_one_db(fetch_query)
+    
+    rev =  db_result['revision']
     config_information = {
+        "config_version": value["config_version"],
         "date_updated": get_current_datetime(),
+        "configuration_data": value["configuration"],
+        "revision": rev + 1,
     }
 
-    try:
-        # Fetch single row
+    # Fetch single row
+    if config_name is not None:
         query = app_config.update().where(app_config.c.config_name == config_name)
-        values = config_information
-        result = await database.execute(query, values)
-        return result
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
+    
+    if config_id is not None:
+        query = app_config.update().where(app_config.c.config_id == config_id)
+
+    values = config_information
+    await execute_one_db(query, values)
+    db_result = await fetch_one_db(fetch_query)
+    c_id = db_result['config_id']
+    c_name = db_result['config_name']
+    logger.info(f"config_id: '{c_id}', config_name: '{c_name}' has been updated")
+    return {"config_id": c_id, "config_name": c_name, "status": "updated"}
 
 
 @router.put(
-    "/deactivate/{config_name}",
+    "/active-status",
     tags=["configuration"],
     response_description="Deactivated",
     responses={
@@ -279,11 +282,14 @@ async def update_config_name(
         500: {"description": "Mommy!"},
     },
 )
-async def deactivate_config_name(
-    *,
-    config_name: str = Path(
-        ..., title="The configuration name to be deactivated", alias="config_name"
+async def deactivate_config(
+    config_id: str = Query(
+        None, title="The configuration id to be searched for", alias="config_id"
     ),
+    config_name: str = Query(
+        None, title="The configuration id to be searched for", alias="config_name"
+    ),
+    is_active: bool = Query(None, title="by active status", alias="active"),
 ) -> dict:
     """
     Deactivate a specific config UUID
@@ -294,54 +300,43 @@ async def deactivate_config_name(
     Returns:
         dict -- [description]
     """
-    config_information = {"is_active": False, "date_updated": get_current_datetime()}
+    if is_active is None:
+        is_active = False
 
-    try:
-        # Fetch single row
+    if config_id is None and config_name is None:
+        detail = f"Either config_id or config_name must be used."
+        logger.error(f"Error: {detail}")
+        raise HTTPException(status_code=400, detail=detail)
+    elif config_id is not None and config_name is not None:
+        detail = f"Either config_id or config_name can be used."
+        logger.error(f"Error: {detail}")
+        raise HTTPException(status_code=400, detail=detail)
+
+    # Fetch single row
+    config_information = {"is_active": is_active, "date_updated": get_current_datetime()}
+    if config_name is not None:
         query = app_config.update().where(app_config.c.config_name == config_name)
-        values = config_information
-        result = await database.execute(query, values)
-        return result
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
-
-
-@router.put(
-    "/deactivate/{config_id}",
-    tags=["configuration"],
-    response_description="Deactivated",
-    responses={
-        302: {"description": "Incorrect URL, redirecting"},
-        404: {"description": "Operation forbidden"},
-        405: {"description": "Method not allowed"},
-        500: {"description": "Mommy!"},
-    },
-)
-async def deactivate_config_id(
-    *,
-    config_id: str = Path(
-        ..., title="The configuration ID to be deactivated", alias="config_id"
-    ),
-) -> dict:
-    """
-    Deactivate a specific config UUID
-
-    Keyword Arguments:
-        config_id {str} -- [description] UUID of config_id property required
-
-    Returns:
-        dict -- [description]
-    """
-    config_information = {"is_active": False, "date_updated": get_current_datetime()}
-
-    try:
-        # Fetch single row
+    if config_id is not None:
         query = app_config.update().where(app_config.c.config_id == config_id)
-        values = config_information
-        result = await database.execute(query, values)
-        return result
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
+    
+    values = config_information
+    await execute_one_db(query, values)
+
+    if config_name is not None:
+        fetch_query = app_config.select().where(app_config.c.config_name == config_name)
+    if config_id is not None:
+        fetch_query = app_config.select().where(app_config.c.config_id == config_id)
+    result = await fetch_one_db(fetch_query)
+    if result is None:
+        # return error if empty results
+        detail = f"No results match query criteria"
+        logger.error(f"Error: {detail}")
+        raise HTTPException(status_code=404, detail=detail)
+    
+    update_id = result['config_id']
+    result = {'result': f'config_id {update_id} updated to status of {is_active}'}
+    logger.info(result)
+    return result
 
 
 @router.post("/create-config", tags=["configuration"])
@@ -353,7 +348,7 @@ async def create_configuration(new_config: AppConfigurationBase) -> dict:
         raise HTTPException(status_code=400, detail=detail)
 
     config_data = json.dumps(value["configuration"])
-    print(config_data)
+    
     create_new_config = {
         "config_id": str(uuid.uuid4()),
         "config_name": value["config_name"],
@@ -362,11 +357,12 @@ async def create_configuration(new_config: AppConfigurationBase) -> dict:
         "date_updated": get_current_datetime(),
         "is_active": True,
         "configuration_data": value["configuration"],
+        "revision": 1,
     }
     try:
         query = app_config.insert()
         values = create_new_config
-        await database.execute(query, values)
+        await execute_one_db(query, values)
 
         result = {
             "config_id": create_new_config["config_id"],
@@ -377,7 +373,7 @@ async def create_configuration(new_config: AppConfigurationBase) -> dict:
 
         if "UNIQUE constraint" in str(e):
             detail = f"config_name must be unique"
-            logger.critical(f"ERROR 400: {detail}")
+            logger.critical(f"Error: {detail}")
             raise HTTPException(status_code=400, detail=detail)
         else:
             logger.error(f"Critical Error: {e}")

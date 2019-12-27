@@ -2,7 +2,8 @@
 import time
 import uuid
 from datetime import datetime, timedelta
-from random import randint
+from random import randint, random
+import string
 
 import silly
 from fastapi import BackgroundTasks
@@ -15,7 +16,7 @@ from com_lib.simple_functions import get_current_datetime
 # from db_setup import todos
 from db_setup import app_config, database, users
 from endpoints.sillyusers.gen_user import user_test_info
-from settings import NUMBER_CONFIG, NUMBER_USERS
+from settings import NUMBER_CONFIG, NUMBER_USERS,CREATE_SAMPLE_DATA
 
 number_of_config = NUMBER_CONFIG
 number_of_users = NUMBER_USERS
@@ -24,6 +25,7 @@ currentTime = datetime.now()
 
 
 def create_data():
+    
 
     logger.info(f"creating demo data")
     user_count = count_users().result()
@@ -31,10 +33,12 @@ def create_data():
 
     if int(user_count) == 0:
         create_users(int(number_of_users))
+        logger.info(f"Sample users created")
     else:
         logger.info(f"existing data, sample users will not be created")
 
     if int(config_count) == 0:
+        logger.info(f"Sample configurations created")
         create_config(int(number_of_config))
     else:
         logger.info(f"existing data, sample config will not be created")
@@ -68,18 +72,22 @@ def create_users(create_users: int):
         db_user_call(new_user)
 
 
+# def rand_letters():
+#     random.choice(string.letters)
+
 def create_config(create_config: int):
 
     for _ in range(0, create_config):
         time.sleep(0.01)
         config_information = {
             "config_id": str(uuid.uuid4()),
-            "config_name": f"{silly.noun()}-{silly.verb()}",
+            "config_name": f"{silly.name(slugify=True)}-{silly.verb()}-{silly.plural()}{randint(0, 10000)}",
             "config_version": f"{randint(0, 10)}.{randint(0, 99)}",
             "description": silly.sentence(),
             "date_created": get_current_datetime(),
             "date_updated": get_current_datetime(),
             "is_active": True,
+            "revision": randint(0, 100),
             "configuration_data": {
                 "installationAt": "Philadelphia, PA",
                 "adminEmail": "ksm@pobox.com",
@@ -126,7 +134,7 @@ async def db_user_call(new_user: dict):
 
         result = {
             "user_id": new_user["user_id"],
-            # "user_name": new_user["user_name"],
+            "user_name": new_user["user_name"],
         }
         logger.info(f"db user call: {result}")
         return result

@@ -9,7 +9,7 @@ def user_test_info():
     set_id = str(uuid.uuid1())
     rand_name: str = silly.noun()
     rand_num: int = random.randint(1, 10000)
-    username: str = f"{rand_name}-{rand_num}"
+    user_name: str = f"{rand_name}-{rand_num}-{random.randint(1, 100)}"
     first_name: str = silly.verb()
     last_name: str = rand_name
     password: str = f"{silly.verb()}-{silly.noun()}"
@@ -19,14 +19,14 @@ def user_test_info():
     city: str = silly.city(capitalize=True)
     country: str = silly.country(capitalize=True)
     postal_code: str = silly.postal_code()
-    email = silly.email()
+    email = f"{random.randint(1, 10000)}-{silly.email()}"
     phone = silly.phone_number()
     description: str = silly.paragraph(length=1)
     website = f"https://www.{silly.domain()}"
 
     result = {
         "user_id": set_id,
-        "user_name": username,
+        "user_name": user_name,
         "first_name": first_name,
         "last_name": last_name,
         "password": password,

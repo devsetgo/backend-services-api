@@ -98,7 +98,7 @@ async def startup_event():
 
         if CREATE_SAMPLE_DATA == "True":
             create_data()
-            logger.info("Create Data")
+
 
     else:
         logger.info(f"API initiated Release_ENV: {RELEASE_ENV}")
