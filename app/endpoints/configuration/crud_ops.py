@@ -11,16 +11,17 @@ from db_setup import app_config, database
 from endpoints.configuration.models import AppConfigurationBase, ConfigUpdate
 
 
-
 async def fetch_one_db(query):
 
     result = await database.fetch_one(query)
     return result
 
+
 async def fetch_all_db(query):
 
     result = await database.fetch_all(query)
     return result
+
 
 async def execute_one_db(query, values: dict):
 

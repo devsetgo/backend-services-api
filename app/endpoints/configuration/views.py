@@ -9,7 +9,8 @@ from loguru import logger
 from com_lib.simple_functions import get_current_datetime
 from db_setup import app_config, database
 from endpoints.configuration.models import AppConfigurationBase, ConfigUpdate
-from endpoints.configuration.crud_ops import fetch_one_db,fetch_all_db,execute_one_db
+from endpoints.configuration.crud_ops import fetch_one_db, fetch_all_db, execute_one_db
+
 router = APIRouter()
 
 
@@ -56,7 +57,7 @@ async def configuration_list(
             .limit(qty)
             .offset(offset)
         )
-        
+
         db_result = await fetch_all_db(query)
 
         count_query = (
@@ -64,7 +65,7 @@ async def configuration_list(
             .where(app_config.c.is_active == is_active)
             .order_by(app_config.c.date_created)
         )
-        
+
         total_count = await fetch_all_db(count_query)
 
     else:
@@ -185,15 +186,14 @@ async def get_confg_id(
         query = app_config.select().where(app_config.c.config_id == config_id)
 
     db_result = await fetch_one_db(query)
-    
+
     if db_result is None:
         # return error if empty results
         detail = f"No results match query criteria"
         logger.error(f"Error: {detail}")
         raise HTTPException(status_code=404, detail=detail)
-    
-    return db_result
 
+    return db_result
 
 
 @router.put(
@@ -239,15 +239,15 @@ async def update_config(
         detail = f"Either config_id or config_name can be used."
         logger.error(f"Error: {detail}")
         raise HTTPException(status_code=400, detail=detail)
-    
+
     if config_name is not None:
         fetch_query = app_config.select().where(app_config.c.config_name == config_name)
     if config_id is not None:
         fetch_query = app_config.select().where(app_config.c.config_id == config_id)
 
     db_result = await fetch_one_db(fetch_query)
-    
-    rev =  db_result['revision']
+
+    rev = db_result["revision"]
     config_information = {
         "config_version": value["config_version"],
         "date_updated": get_current_datetime(),
@@ -258,15 +258,15 @@ async def update_config(
     # Fetch single row
     if config_name is not None:
         query = app_config.update().where(app_config.c.config_name == config_name)
-    
+
     if config_id is not None:
         query = app_config.update().where(app_config.c.config_id == config_id)
 
     values = config_information
     await execute_one_db(query, values)
     db_result = await fetch_one_db(fetch_query)
-    c_id = db_result['config_id']
-    c_name = db_result['config_name']
+    c_id = db_result["config_id"]
+    c_name = db_result["config_name"]
     logger.info(f"config_id: '{c_id}', config_name: '{c_name}' has been updated")
     return {"config_id": c_id, "config_name": c_name, "status": "updated"}
 
@@ -313,12 +313,15 @@ async def deactivate_config(
         raise HTTPException(status_code=400, detail=detail)
 
     # Fetch single row
-    config_information = {"is_active": is_active, "date_updated": get_current_datetime()}
+    config_information = {
+        "is_active": is_active,
+        "date_updated": get_current_datetime(),
+    }
     if config_name is not None:
         query = app_config.update().where(app_config.c.config_name == config_name)
     if config_id is not None:
         query = app_config.update().where(app_config.c.config_id == config_id)
-    
+
     values = config_information
     await execute_one_db(query, values)
 
@@ -332,9 +335,9 @@ async def deactivate_config(
         detail = f"No results match query criteria"
         logger.error(f"Error: {detail}")
         raise HTTPException(status_code=404, detail=detail)
-    
-    update_id = result['config_id']
-    result = {'result': f'config_id {update_id} updated to status of {is_active}'}
+
+    update_id = result["config_id"]
+    result = {"result": f"config_id {update_id} updated to status of {is_active}"}
     logger.info(result)
     return result
 
@@ -348,7 +351,7 @@ async def create_configuration(new_config: AppConfigurationBase) -> dict:
         raise HTTPException(status_code=400, detail=detail)
 
     config_data = json.dumps(value["configuration"])
-    
+
     create_new_config = {
         "config_id": str(uuid.uuid4()),
         "config_name": value["config_name"],

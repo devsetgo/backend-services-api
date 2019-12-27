@@ -16,7 +16,7 @@ from com_lib.simple_functions import get_current_datetime
 # from db_setup import todos
 from db_setup import app_config, database, users
 from endpoints.sillyusers.gen_user import user_test_info
-from settings import NUMBER_CONFIG, NUMBER_USERS,CREATE_SAMPLE_DATA
+from settings import NUMBER_CONFIG, NUMBER_USERS, CREATE_SAMPLE_DATA
 
 number_of_config = NUMBER_CONFIG
 number_of_users = NUMBER_USERS
@@ -25,7 +25,6 @@ currentTime = datetime.now()
 
 
 def create_data():
-    
 
     logger.info(f"creating demo data")
     user_count = count_users().result()
@@ -38,8 +37,8 @@ def create_data():
         logger.info(f"existing data, sample users will not be created")
 
     if int(config_count) == 0:
-        logger.info(f"Sample configurations created")
         create_config(int(number_of_config))
+        logger.info(f"Sample configurations created")
     else:
         logger.info(f"existing data, sample config will not be created")
 
@@ -71,9 +70,6 @@ def create_users(create_users: int):
         new_user = user_test_info()
         db_user_call(new_user)
 
-
-# def rand_letters():
-#     random.choice(string.letters)
 
 def create_config(create_config: int):
 
