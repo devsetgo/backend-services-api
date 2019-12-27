@@ -132,19 +132,16 @@ async def configuarations_list_count(
         dict -- [description]
     """
 
-    try:
-        # Fetch multiple rows
-        if is_active is not None:
-            query = app_config.select().where(app_config.c.is_active == is_active)
-            x = await fetch_all_db(query)
-        else:
-            query = app_config.select()
-            x = await fetch_all_db(query)
-        logger.info(f"Cofiguration list queried")
-        result = {"count": len(x)}
-        return result
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
+    # Fetch multiple rows
+    if is_active is not None:
+        query = app_config.select().where(app_config.c.is_active == is_active)
+        x = await fetch_all_db(query)
+    else:
+        query = app_config.select()
+        x = await fetch_all_db(query)
+    logger.info(f"Cofiguration list queried")
+    result = {"count": len(x)}
+    return result
 
 
 @router.get(
@@ -190,7 +187,7 @@ async def get_confg_id(
     if db_result is None:
         # return error if empty results
         detail = f"No results match query criteria"
-        logger.error(f"Error: {detail}")
+        logger.error(f"Error: {detail} {db_result}")
         raise HTTPException(status_code=404, detail=detail)
 
     return db_result
@@ -227,7 +224,8 @@ async def update_config(
         dict -- [description]
     """
     value = config_update.dict()
-    if value["configuration"] is None:
+
+    if len(value["configuration_data"]) == 0:
         detail = f"'configuration_data' cannot be empty"
         raise HTTPException(status_code=400, detail=detail)
 
@@ -251,7 +249,7 @@ async def update_config(
     config_information = {
         "config_version": value["config_version"],
         "date_updated": get_current_datetime(),
-        "configuration_data": value["configuration"],
+        "configuration_data": value["configuration_data"],
         "revision": rev + 1,
     }
 
@@ -346,11 +344,12 @@ async def deactivate_config(
 async def create_configuration(new_config: AppConfigurationBase) -> dict:
 
     value = new_config.dict()
-    if value["configuration"] is None:
+    if len(value["configuration_data"]) is 0:
         detail = f"'configuration_data' cannot be empty"
+        logger.error(f"Error: 'configuration_data' cannot be empty")
         raise HTTPException(status_code=400, detail=detail)
 
-    config_data = json.dumps(value["configuration"])
+    config_data = json.dumps(value["configuration_data"])
 
     create_new_config = {
         "config_id": str(uuid.uuid4()),
@@ -359,7 +358,7 @@ async def create_configuration(new_config: AppConfigurationBase) -> dict:
         "date_created": get_current_datetime(),
         "date_updated": get_current_datetime(),
         "is_active": True,
-        "configuration_data": value["configuration"],
+        "configuration_data": value["configuration_data"],
         "revision": 1,
     }
     try:
