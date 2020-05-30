@@ -2,8 +2,8 @@ aiosqlite==0.13.0 # from 0.10.0
 alembic==1.4.2 # from 1.3.1
 asyncpg==0.20.1 # from 0.20.0
 databases==0.3.2 # from 0.2.6
-fastapi-login==1.2.2 # from 1.1.0
 fastapi [all]==0.55.1 # from 0.44.0
+fastapi-login==1.2.2 # from 1.1.0
 gitpython==3.1.2 # from 3.0.5
 gunicorn==20.0.4
 loguru==0.5.0 # from 0.3.2
