@@ -5,37 +5,46 @@ For local development, use a .env file to set
 environment variables.
 """
 
-from starlette.config import Config
+import secrets
+from datetime import datetime
+from functools import lru_cache
 
-# get environment variables
-config = Config(".env")
+from pydantic import AnyUrl, BaseSettings
 
-# Application information
-APP_VERSION = config("APP_VERSION", default="1.0.0")
-OWNER = config("OWNER", default="Mike Ryan")
-WEBSITE = config("WEBSITE", default="https://devsetgo.com")
-LICENSE_TYPE = config("LICENSE_TYPE", default="MIT")
-LICENSE_LINK = config(
-    "LICENSE_LINK", default="https://github.com/devsetgo/starlette-SRTDashboard"
-)
 
-# Demo Data
-CREATE_SAMPLE_DATA = config("CREATE_SAMPLE_DATA", default=False)
-NUMBER_CONFIG = config("NUMBER_CONFIG", default=10)
-NUMBER_USERS = config("NUMBER_USER", default=10)
+class Settings(BaseSettings):
+    title: str = "Test API"
+    description: str = "Example API to learn from."
+    app_version: str = "1.0.0"
+    owner: str = "Mike Ryan"
+    website: AnyUrl = "https://devsetgo.com"
+    license_type: str = "MIT"
+    license_link: AnyUrl = "https://github.com/devsetgo/test-api/blob/master/LICENSE"
+    # application configurations
+    host_domain: AnyUrl = "https://test-api.devsetgo.com"
+    release_env: str = "prd"
+    https_on: bool = True
+    prometheus_on: bool = True
+    database_type: str = "sqlite"
+    db_name: str = "sqlite_db/api.db"
+    sqlalchemy_database_uri: str = "sqlite:///sqlite_db/api.db"
+    workers: int = 2
+    secret_key: str = str(secrets.token_urlsafe(256))
+    # loguru settings
+    loguru_retention: str = "10 days"
+    loguru_rotation: str = "100 MB"
+    loguru_logging_level: str = "INFO"
+    # Config info
+    updated: datetime = datetime.utcnow()
 
-# Application Configurations
-HOST_DOMAIN = config("HOST_DOMAIN", default="https://devsetgo.com")
-RELEASE_ENV = config("RELEASE_ENV", default="prd")
-SQLALCHEMY_DATABASE_URI = config(
-    "SQLALCHEMY_DATABASE_URI", default="sqlite:///sqlite_db/api.db"
-)
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
-# Loguru settings
-LOGURU_RETENTION = config("LOGURU_RETENTION", default="10 days")
-LOGURU_ROTATION = config("LOGURU_ROTATION", default="10 MB")
 
-# Access Token Settings
-SECRET_KEY = config("SECRET_KEY", default="secret-key-1234567890")
-ALGORITHM = config("ALGORITHM", default="HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = config("ACCESS_TOKEN_EXPIRE_MINUTES", default=10080)
+@lru_cache()
+def get_settings():
+    return Settings()
+
+
+config_settings = get_settings()
