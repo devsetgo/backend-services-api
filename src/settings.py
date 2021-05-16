@@ -16,12 +16,7 @@ class Settings(BaseSettings):
     title: str = "Test API"
     description: str = "Example API to learn from."
     app_version: str = "1.0.0"
-    owner: str = "Mike Ryan"
-    website: AnyUrl = "https://devsetgo.com"
-    license_type: str = "MIT"
-    license_link: AnyUrl = "https://github.com/devsetgo/test-api/blob/master/LICENSE"
     # application configurations
-    host_domain: AnyUrl = "https://test-api.devsetgo.com"
     release_env: str = "prd"
     https_on: bool = True
     prometheus_on: bool = True

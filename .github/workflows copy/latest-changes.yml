@@ -1,0 +1,24 @@
+name: Latest Changes
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - closed
+jobs:
+  latest-changes:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - uses: tiangolo/latest-changes@main
+        with:
+          token: ${{ secrets.RELEASE_NOTES }}
+          latest_changes_file: ./docs/release-notes.md
+          latest_changes_header: '# Release Notes\n\n'
+          # template_file: ./.github/workflows/release-notes.jinja2
+          debug_logs: true

@@ -1,0 +1,26 @@
+name: Docker RC
+on:
+  push:
+    branches:
+    - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@main
+      with:
+        ref: main
+    - name: docker-build
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        ls -l
+        echo 'Docker Login'
+        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        CAL_VER=$(date '+%Y-%m-%d')
+        echo 'Docker Build'
+        docker build -t mikeryan56/test-api:$CAL_VER-python38-rc -f dockerfiles/dockerfile_python .
+        docker push mikeryan56/test-api:$CAL_VER-python38-rc
+
+

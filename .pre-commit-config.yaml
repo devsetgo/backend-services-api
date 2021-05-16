@@ -1,24 +1,18 @@
 repos:
 -   repo: https://github.com/ambv/black
-    rev: stable
+    rev: 20.8b1
     hooks:
     - id: black
-      language_version: python3.6
+      language_version: python3.8
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v3.4.0
     hooks:
       - id: fix-encoding-pragma
       - id: trailing-whitespace
-      # - id: check-json
-      # - id: pretty-format-json
       - id: requirements-txt-fixer
-
--   repo: https://github.com/Lucas-C/pre-commit-hooks-safety
-    rev: v1.1.0
-    hooks:
-    -   id: python-safety-dependencies-check
-
-
+      - id: detect-private-key
+      - id: check-merge-conflict
+      # - id:
 # -   repo: git://github.com/doublify/pre-commit-isort
 #     sha: master
 #     hooks:

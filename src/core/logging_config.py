@@ -8,6 +8,20 @@ from loguru import logger
 from settings import config_settings
 
 
+import httpx
+
+client = httpx.AsyncClient()
+
+
+async def send_message(message):
+    # requests.post("http://127.0.0.1:8000/logs/post", data={"message": message})
+    url = "http://127.0.0.1"
+    await client.post(url=url, data={"message": message})
+
+
+# logger.add(send_message, level="WARNING")
+
+
 def config_logging():
     # remove default logger
     logger.remove()
@@ -52,3 +66,11 @@ def config_logging():
         handlers=[InterceptHandler()],
         level=config_settings.loguru_logging_level.upper(),
     )
+
+
+def request_parser(request_data):
+    client_host = request_data.client.host
+    meth = request_data.method
+    url_path = request_data.url.path
+    head = request_data.headers["user-agent"]
+    logger.info(f"{client_host} | {meth} | {url_path} | {head}")
