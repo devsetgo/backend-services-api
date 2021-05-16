@@ -18,6 +18,6 @@ class Test(TestCase):
         response = client.get("/info")
         assert response.status_code == 200
 
-    # def test_metrics(self):
-    #     response = client.get("/api/health/metrics")
-    #     assert response.status_code == 200
+    def test_metrics(self):
+        response = client.get("/api/health/metrics")
+        assert response.status_code == 200

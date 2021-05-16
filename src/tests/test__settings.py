@@ -2,7 +2,7 @@
 from fastapi.testclient import TestClient
 import pytest
 from src import main
-from src.settings import config_settings,Settings
+from src.settings import config_settings, Settings
 
 client = TestClient(main.app)
 
