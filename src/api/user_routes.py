@@ -26,19 +26,10 @@ from models.user_models import UserCreate, UserDeactiveModel
 
 router = APIRouter()
 
-title = "Delay in Seconds"
 
 
 @router.get("/list", tags=["users"])
 async def user_list(
-    delay: int = Query(
-        None,
-        title=title,
-        description="Seconds to delay (max 121)",
-        ge=1,
-        le=121,
-        alias="delay",
-    ),
     qty: int = Query(
         None,
         title="Quanity",
@@ -76,10 +67,7 @@ async def user_list(
 
     """
     criteria = []
-    # sleep if delay option is used
-    if delay is not None:
-        await asyncio.sleep(delay)
-
+    
     if qty is None:
         qty: int = 100
 
@@ -162,13 +150,6 @@ async def user_list(
     },
 )
 async def users_list_count(
-    delay: int = Query(
-        None,
-        title=title,
-        ge=1,
-        le=10,
-        alias="delay",
-    ),
     is_active: bool = Query(None, title="by active status", alias="active"),
 ) -> dict:
     """
@@ -182,9 +163,7 @@ async def users_list_count(
     Returns:
         dict -- [description]
     """
-    # sleep if delay option is used
-    if delay is not None:
-        await asyncio.sleep(delay)
+    
 
     try:
         # Fetch multiple rows
@@ -223,9 +202,7 @@ async def get_user_id(
     Returns:
         dict -- [description]
     """
-    # sleep if delay option is used
-    if delay is not None:
-        await asyncio.sleep(delay)
+    
 
     try:
         # Fetch single row
@@ -270,13 +247,6 @@ async def get_user_id(
 async def set_status_user_id(
     *,
     user_data: UserDeactiveModel,
-    delay: int = Query(
-        None,
-        title=title,
-        ge=1,
-        le=10,
-        alias="delay",
-    ),
 ) -> dict:
     """
     Set status of a specific user UUID
@@ -301,9 +271,7 @@ async def set_status_user_id(
 
     values = user_data.dict()
     values["date_updated"] = get_current_datetime()
-    # sleep if delay option is used
-    if delay is not None:
-        await asyncio.sleep(delay)
+    
 
     try:
         # Fetch single row
@@ -362,13 +330,7 @@ async def delete_user_id(
 async def create_user(
     *,
     user: UserCreate,
-    delay: int = Query(
-        None,
-        title=title,
-        ge=1,
-        le=10,
-        alias="delay",
-    ),
+    
 ) -> dict:
     """
     POST/Create a new User. user_name (unique), firstName, lastName,
@@ -407,9 +369,7 @@ async def create_user(
         "is_superuser": False,
     }
 
-    # sleep if delay option is used
-    if delay is not None:
-        await asyncio.sleep(delay)
+    
 
     try:
         query = users.insert()
