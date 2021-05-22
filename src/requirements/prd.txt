@@ -1,5 +1,5 @@
 aiosqlite==0.17.0
-alembic==1.6.2 # from 1.5.8
+alembic==1.6.3 # from 1.5.8
 asyncpg==0.22.0
 databases==0.4.3
 fastapi[all]==0.64.0 # from 0.63.0
