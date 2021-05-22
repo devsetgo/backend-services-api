@@ -27,7 +27,6 @@ from models.user_models import UserCreate, UserDeactiveModel
 router = APIRouter()
 
 
-
 @router.get("/list", tags=["users"])
 async def user_list(
     qty: int = Query(
@@ -55,7 +54,6 @@ async def user_list(
     list of users
 
     Keyword Arguments:
-        delay {int} -- [description] 0 seconds default, maximum is 122
         qty {int} -- [description] 100 returned results is default,
         maximum is 500
         offset {int} -- [description] 0 seconds default
@@ -67,7 +65,7 @@ async def user_list(
 
     """
     criteria = []
-    
+
     if qty is None:
         qty: int = 100
 
@@ -133,7 +131,6 @@ async def user_list(
             "total_count": len(total_count),
             "offset": offset,
             "filter": is_active,
-            "delay": delay,
         },
         "users": result_set,
     }
@@ -156,14 +153,12 @@ async def users_list_count(
     Count of users in the database
 
     Keyword Arguments:
-        delay {int} -- [description] 0 seconds default, maximum is 122
         Active {bool} -- [description] no default as not required,
         must be Active=true or false if used
 
     Returns:
         dict -- [description]
     """
-    
 
     try:
         # Fetch multiple rows
@@ -189,13 +184,10 @@ async def get_user_id(
 
     Keyword Arguments:
         user_id {str} -- [description] UUID of user_id property required
-        delay {int} -- [description] 0 seconds default, maximum is 122
-
 
     Returns:
         dict -- [description]
     """
-    
 
     try:
         # Fetch single row
@@ -246,7 +238,6 @@ async def set_status_user_id(
 
     Args:
         user_data (UserDeactiveModel): [id = UUID of user, isActive = True or False]
-        delay (int, optional): [description]. Defaults to Query( None, title=title, ge=1, le=10, alias="delay", ).
 
     Returns:
         dict: [description]
@@ -256,7 +247,6 @@ async def set_status_user_id(
 
     Keyword Arguments:
         user_id {str} -- [description] UUID of user_id property required
-        delay {int} -- [description] 0 seconds default, maximum is 122
 
     Returns:
         dict -- [description]
@@ -264,7 +254,6 @@ async def set_status_user_id(
 
     values = user_data.dict()
     values["date_updated"] = get_current_datetime()
-    
 
     try:
         # Fetch single row
@@ -323,7 +312,6 @@ async def delete_user_id(
 async def create_user(
     *,
     user: UserCreate,
-    
 ) -> dict:
     """
     POST/Create a new User. user_name (unique), firstName, lastName,
@@ -333,7 +321,6 @@ async def create_user(
         user {UserCreate} -- [description]
 
     Keyword Arguments:
-        delay {int} -- [description] 0 seconds default, maximum is 122
 
     Returns:
         dict -- [user_id: uuid, user_name: user_name]
@@ -361,8 +348,6 @@ async def create_user(
         "is_active": True,
         "is_superuser": False,
     }
-
-    
 
     try:
         query = users.insert()

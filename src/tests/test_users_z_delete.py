@@ -3,7 +3,7 @@ import unittest
 
 from starlette.testclient import TestClient
 
-from src.core.file_functions import open_json
+from devsetgo_lib.file_functions import open_json
 from src.main import app
 
 client = TestClient(app)
