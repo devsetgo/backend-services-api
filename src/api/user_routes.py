@@ -164,12 +164,12 @@ async def users_list_count(
         # Fetch multiple rows
         if is_active is not None:
             query = users.select().where(users.c.is_active == is_active)
-            x = await database.fetch_all(query)
+            data = await database.fetch_all(query)
         else:
             query = users.select()
-            x = await database.fetch_all(query)
+            data = await database.fetch_all(query)
 
-        result = {"count": len(x)}
+        result = {"count": len(data)}
         return result
     except Exception as e:
         logger.error(f"Critical Error: {e}")
