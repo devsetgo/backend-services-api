@@ -1,0 +1,70 @@
+
+site_name: Test-Api
+# Project information
+site_name: 'Test-Api'
+site_description: 'An example test-api built with FastApi'
+site_author: 'Mike Ryan'
+
+repo_name: 'devsetgo/test-api'
+repo_url: 'https://github.com/devsetgo/test-api'
+
+# Copyright
+copyright: 'Copyright &copy; 2016 - 2021 Mike Ryan'
+
+nav:
+    - Introduction: 'index.md'
+    - ReleaseNotes: 'release-notes.md'
+    - Contributing: 'contribute.md'
+# Theme
+theme:
+  features:
+    - navigation.tabs
+    - navigation.instant
+  name: 'material'
+  palette:
+    # Toggle light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+    # Toggle dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+  language: en
+  plugins:
+    - search
+
+  # font:
+  #   text: 'Roboto'
+  #   code: 'Roboto Mono'
+  # logo:
+  #   icon:
+  #     repo: fontawesome/solid/people-carry
+  # language: 'en'
+  # plugins:
+  # - search
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - footnotes
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+      separator: '[\s\-\.]+'
+      lang:
+        - en
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/devsetgo

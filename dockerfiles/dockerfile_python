@@ -1,0 +1,51 @@
+# Created and maintained by github.com/devsetgo
+FROM python:3.8-slim-buster
+RUN apt-get update && apt-get -y install build-essential
+EXPOSE 5000
+COPY /src /src
+WORKDIR /src
+
+# ENV Variables
+# Application information
+ENV TITLE="Test API"
+ENV DESCRIPTION="Example API to learn from."
+ENV APP_VERSION='20.12.11'
+ENV OWNER='Your Name'
+ENV WEBSITE='https://your.domain.com/support'
+# Demo settings
+ENV CREATE_SAMPLE_DATA=False
+ENV NUMBER_TASKS=100
+ENV NUMBER_USERS=100
+ENV NUMBER_GROUPS=100
+# Cofigurations
+ENV HOST_DOMAIN='https://your.domain.com'
+#prd for production or 'dev' for development
+ENV RELEASE_ENV='prd'
+ENV HTTPS_ON=False
+ENV ADD_DEFAULT_GROUP=False
+ENV SQLALCHEMY_DATABASE_URI='sqlite:///sqlite_db/api.db'
+# Loguru settings
+ENV LOGURU_RETENTION='10 days'
+ENV LOGURU_ROTATION='100 MB'
+# Values NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
+ENV LOGURU_LOGGING_LEVEL='INFO'
+# Workers - Set to 1 or more (max = CPUs x 2 + 1)
+ENV WRKRS=2
+# Leave intact for license
+ENV CREATED_BY='Mike Ryan'
+ENV LICENSE_TYPE='MIT'
+ENV LICENSE_LINK='https://github.com/devsetgo/test-api/blob/master/LICENSE'
+RUN pip install --upgrade setuptools pip
+RUN pip install -r requirements.txt
+RUN useradd -m -r testapi && \
+    chown -R testapi /src
+USER testapi
+
+RUN echo $WORKERS
+CMD ["./scripts/run.sh"]
+
+# CMD ["gunicorn main:app --workers=${WRKRS} --bind=0.0.0.0:5000 --worker-class=uvicorn.workers.UvicornH11Worker","--log-level=$LOGURU_LOGGING_LEVEL"]
+# CMD ["uvicorn", "main:app", "--workers", 2, "--host", "0.0.0.0", "--port", "5000"] #, "--log-level", ${LOGURU_LOGGING_LEVEL,,}]
+# CMD ["gunicorn", "main:app", "--workers $WORKERS", "--bind 0.0.0.0:5000", "--worker-class uvicorn.workers.UvicornH11Worker","--log-level $LOGGING_LEVEL"]
+# CMD ["gunicorn",  "-c", "gunicorn_cfg.py", "main:app"]
+# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
