@@ -6,6 +6,31 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
+  tests:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.9','3.8','3.7']
+    steps:
+    - uses: actions/checkout@main
+      with:
+              fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    - name: Python ${{ matrix.python }} version
+      uses: actions/setup-python@v1
+      with:
+          python-version: ${{ matrix.python }}
+          architecture: x64
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        cd src
+        pip install -r requirements/dev.txt
+    - name: Test with pytest
+      run: |
+        cd src
+        cp .env_sample .env
+        python3 -m pytest
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
