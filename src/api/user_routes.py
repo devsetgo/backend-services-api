@@ -183,13 +183,6 @@ async def users_list_count(
 @router.get("/{user_id}", tags=["users"], response_description="Get user information")
 async def get_user_id(
     user_id: str = Path(..., title="The user id to be searched for", alias="user_id"),
-    delay: int = Query(
-        None,
-        title=title,
-        ge=1,
-        le=121,
-        alias="delay",
-    ),
 ) -> dict:
     """
     User information for requested UUID
