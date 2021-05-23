@@ -3,21 +3,25 @@
 database simple functions. Pass query and where needed values and get result back
 """
 
-
 from loguru import logger
 
 from core.db_setup import database
 
 
 async def fetch_one_db(query):
+
     try:
+        await database.connect()
         logger.debug(query)
         result = await database.fetch_one(query)
-        logger.debug(result)
+        logger.error(f"data is of type {type(result)}")
+        await database.disconnect()
         return result
     except Exception as e:
         logger.critical(f"error: {e}")
+        await database.disconnect()
         return e
+
 
 
 async def fetch_all_db(query):

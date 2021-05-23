@@ -16,7 +16,7 @@ user unlock
 import asyncio
 import uuid
 
-from fastapi import APIRouter, Form, Path, Query
+from fastapi import APIRouter, Form, Path, Query, HTTPException
 from loguru import logger
 
 from core.db_setup import database, users
@@ -31,7 +31,7 @@ router = APIRouter()
 async def user_list(
     qty: int = Query(
         None,
-        title="Quanity",
+        title="Quantity",
         description="Records to return (max 500)",
         ge=1,
         le=500,
@@ -41,13 +41,8 @@ async def user_list(
         None, title="Offset", description="Offset increment", ge=0, alias="offset"
     ),
     is_active: bool = Query(None, title="by active status", alias="active"),
-    first_name: str = Query(None, title="first name", alias="firstname"),
-    last_name: str = Query(None, title="last name", alias="lastname"),
-    title: str = Query(None, title="title", alias="title"),
-    company: str = Query(None, title="company", alias="company"),
-    city: str = Query(None, title="city", alias="city"),
-    country: str = Query(None, title="country", alias="country"),
-    postal: str = Query(None, title="postal code", alias="postal"),
+    user_name: str = Query(None, title="User name", alias="username"),
+    email: str = Query(None, title="Email", alias="email"),
 ) -> dict:
 
     """
@@ -72,26 +67,11 @@ async def user_list(
     if offset is None:
         offset: int = 0
 
-    if first_name is not None:
-        criteria.append((users.c.first_name, first_name))
+    if user_name is not None:
+        criteria.append((users.c.user_name, user_name))
 
-    if last_name is not None:
-        criteria.append((users.c.last_name, last_name))
-
-    if title is not None:
-        criteria.append((users.c.title, title))
-
-    if company is not None:
-        criteria.append((users.c.company, company))
-
-    if city is not None:
-        criteria.append((users.c.city, city))
-
-    if country is not None:
-        criteria.append((users.c.country, country))
-
-    if postal is not None:
-        criteria.append((users.c.postal, postal))
+    if email is not None:
+        criteria.append((users.c.email, email))
 
     if is_active is not None:
         criteria.append((users.c.is_active, is_active))
@@ -111,15 +91,9 @@ async def user_list(
     for r in db_result:
         # iterate through data and return simplified data set
         user_data = {
-            "user_id": r["user_id"],
+            "id": r["id"],
             "user_name": r["user_name"],
-            "first_name": r["first_name"],
-            "last_name": r["last_name"],
-            "company": r["company"],
-            "title": r["title"],
-            "city": r["city"],
-            "country": r["country"],
-            "postal": r["postal"],
+            "email": r["email"],
             "is_active": r["is_active"],
         }
         result_set.append(user_data)
@@ -175,48 +149,37 @@ async def users_list_count(
         logger.error(f"Critical Error: {e}")
 
 
-@router.get("/{user_id}", tags=["users"], response_description="Get user information")
+@router.get("/{userId}", tags=["users"], response_description="Get user information")
 async def get_user_id(
-    user_id: str = Path(..., title="The user id to be searched for", alias="user_id"),
+    user_id: str = Path(..., title="The user id to be searched for", alias="userId"),
 ) -> dict:
     """
     User information for requested UUID
 
     Keyword Arguments:
-        user_id {str} -- [description] UUID of user_id property required
+        user_id {str} -- [description] UUID of id property required
 
     Returns:
         dict -- [description]
     """
-
-    try:
-        # Fetch single row
-        query = users.select().where(users.c.user_id == user_id)
-        db_result = await database.fetch_one(query)
-
+    # Fetch single row
+    query = users.select().where(users.c.id == user_id)
+    db_result = await database.fetch_one(query)
+    
+    if db_result is None:
+        logger.warning(f"Error: ID {user_id} not found")
+        raise HTTPException(status_code=404, detail="ID not found")
+    else:
         user_data = {
-            "user_id": db_result["user_id"],
+            "id": db_result["id"],
             "user_name": db_result["user_name"],
-            "first_name": db_result["first_name"],
-            "last_name": db_result["last_name"],
-            "company": db_result["company"],
-            "title": db_result["title"],
-            "address": db_result["address"],
-            "city": db_result["city"],
-            "country": db_result["country"],
-            "postal": db_result["postal"],
             "email": db_result["email"],
-            "website": db_result["website"],
-            "description": db_result["description"],
+            "notes": db_result["notes"],
             "date_create": db_result["date_create"],
             "date_updated": db_result["date_updated"],
             "is_active": db_result["is_active"],
         }
         return user_data
-
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
-
 
 @router.put(
     "/status",
@@ -299,7 +262,7 @@ async def delete_user_id(
 
 
 @router.post(
-    "/create/",
+    "/create",
     tags=["users"],
     response_description="The created item",
     responses={
@@ -329,20 +292,11 @@ async def create_user(
     hash_pwd = encrypt_pass(value["password"])
 
     user_information = {
-        "user_id": str(uuid.uuid1()),
+        "id": str(uuid.uuid1()),
         "user_name": value["user_name"].lower(),
-        "first_name": value["first_name"],
-        "last_name": value["last_name"],
-        "password": hash_pwd,
-        "title": value["title"],
-        "company": value["company"],
-        "address": value["address"],
-        "city": value["city"],
-        "country": value["country"],
-        "postal": value["postal"],
         "email": value["email"],
-        "website": value["website"],
-        "description": value["description"],
+        "notes": value["notes"],
+        "password": hash_pwd,
         "date_create": get_current_datetime(),
         "date_updated": get_current_datetime(),
         "is_active": True,
@@ -355,8 +309,9 @@ async def create_user(
         await database.execute(query, values)
 
         result = {
-            "user_id": user_information["user_id"],
+            "id": user_information["id"],
             "user_name": value["user_name"],
+            "is_active": True,
         }
         return result
     except Exception as e:
@@ -364,7 +319,7 @@ async def create_user(
 
 
 @router.post(
-    "/check-pwd/",
+    "/check-pwd",
     tags=["users"],
     response_description="The created item",
     responses={

@@ -48,7 +48,6 @@ async def disconnect_db():
 users = Table(
     "users",
     metadata,
-    # Column('Id', Integer, primary_key=True),
     Column("id", String(length=100), primary_key=True),
     Column("user_name", String(length=50), unique=True, nullable=False),
     Column("email", String(length=200), unique=True, nullable=False),
@@ -63,7 +62,7 @@ users = Table(
 email_service = Table(
     "email_service",
     metadata,
-    Column("id", String, primary_key=True),
+    Column("id", String(length=100), primary_key=True),
     Column("sent", Boolean(), default=False),
     Column("email_content", JSON()),
     Column("user_id", String(length=100)),
@@ -73,7 +72,7 @@ email_service = Table(
 applications = Table(
     "applications",
     metadata,
-    Column("id", String, primary_key=True),
+    Column("id", String(length=100), primary_key=True),
     Column("name", String(length=100), unique=True, nullable=False),
     Column("description", String(length=500)),
     Column("date_create", DateTime()),
@@ -84,7 +83,7 @@ applications = Table(
 app_log = Table(
     "app_log",
     metadata,
-    Column("id", String, primary_key=True),
+    Column("id", String(length=100), primary_key=True),
     Column("app_id", String(length=100)),
     Column("level", String(length=100)),
     Column("data", JSON()),

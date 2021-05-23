@@ -18,7 +18,7 @@ class Test(unittest.TestCase):
     def test_user_password(self):
         user_id = open_json(test_data_users)
         test_data = {"user_name": user_id["user_name"], "password": user_id["password"]}
-        url = f"/api/v1/users/check-pwd/"
+        url = f"/api/v1/users/check-pwd"
 
         response = client.post(url, data=test_data)
         result = response.json()
@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
 
     def test_users_id(self):
         user_id = open_json(test_data_users)
-        uid = user_id["user_id"]
+        uid = user_id["id"]
 
         response = client.get(f"/api/v1/users/{uid}")
         state = response.status_code
@@ -82,12 +82,12 @@ class Test(unittest.TestCase):
 
     def test_users_put_status_deactivate(self):
         user_id = open_json(test_data_users)
-        test_data = {"id": user_id["user_id"], "isActive": False}
+        test_data = {"id": user_id["id"], "isActive": False}
         response = client.put(f"/api/v1/users/status", json=test_data)
         assert response.status_code == 200
 
     def test_users_put_status_activate(self):
         user_id = open_json(test_data_users)
-        test_data = {"id": user_id["user_id"], "isActive": True}
+        test_data = {"id": user_id["id"], "isActive": True}
         response = client.put(f"/api/v1/users/status", json=test_data)
         assert response.status_code == 200
