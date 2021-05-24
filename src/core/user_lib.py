@@ -2,6 +2,7 @@
 from passlib.hash import bcrypt
 from passlib.context import CryptContext
 from jose import JWTError, jwt
+from crud.crud_ops import fetch_one_db
 
 
 def encrypt_pass(pwd: str) -> str:
@@ -23,6 +24,9 @@ def verify_password(plain_password, hashed_password):
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+async def get_user_data(user_id: str):
+    pass
 
 
 async def authenticate_user(user_id: str, pd: str):
