@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import Optional
 
 from fastapi import Depends, FastAPI, HTTPException, status

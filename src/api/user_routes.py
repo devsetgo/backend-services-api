@@ -165,7 +165,7 @@ async def get_user_id(
     # Fetch single row
     query = users.select().where(users.c.id == user_id)
     db_result = await database.fetch_one(query)
-    
+
     if db_result is None:
         logger.warning(f"Error: ID {user_id} not found")
         raise HTTPException(status_code=404, detail="ID not found")
@@ -180,6 +180,7 @@ async def get_user_id(
             "is_active": db_result["is_active"],
         }
         return user_data
+
 
 @router.put(
     "/status",

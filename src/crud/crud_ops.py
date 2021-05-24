@@ -23,7 +23,6 @@ async def fetch_one_db(query):
         return e
 
 
-
 async def fetch_all_db(query):
     try:
         logger.debug(query)

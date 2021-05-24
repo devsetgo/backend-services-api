@@ -12,8 +12,7 @@ directory_to__files: str = "data"
 
 
 class Test(unittest.TestCase):
-    def test_users_delete_delay(self):
+    def test_users_delete(self):
         user_id = open_json("test_data_users.json")
-
-        response = client.delete(f"/api/v1/users/{user_id['user_id']}?delay=1")
+        response = client.delete(f"/api/v1/users/{user_id['id']}")
         assert response.status_code == 200

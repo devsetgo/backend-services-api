@@ -45,7 +45,7 @@ class Test(unittest.TestCase):
         test_offset_2 = response.json()
         test_user_2 = test_offset_2["users"][0]
         assert response.status_code == 200
-        assert test_user_1["user_id"] == test_user_2["user_id"]
+        assert test_user_1["id"] == test_user_2["id"]
 
     def test_users_list_param_none(self):
 
@@ -59,16 +59,8 @@ class Test(unittest.TestCase):
 
     def test_users_list_param_all(self):
         data = open_json(test_data_test_user)
-        a = data["first_name"]
-        b = data["last_name"]
-        c = data["title"]
-        d = data["company"]
-        e = data["city"]
-        f = data["country"]
-        g = data["postal"]
-        response = client.get(
-            f"/api/v1/users/list?active=true&firstname={a}&lastname={b}&title={c}&company={d}&city={e}&country={f}&postal={g}"
-        )
+        a = data["user_name"]
+        response = client.get(f"/api/v1/users/list?active=true&username={a}")
         assert response.status_code == 200
 
     def test_users_id(self):
