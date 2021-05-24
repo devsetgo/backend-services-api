@@ -20,6 +20,7 @@ from fastapi import APIRouter, Form, Path, Query, HTTPException
 from loguru import logger
 
 from core.db_setup import database, users
+from crud.crud_ops import fetch_one_db, fetch_all_db, execute_one_db
 from core.user_lib import encrypt_pass, verify_pass
 from core.simple_functions import get_current_datetime
 from models.user_models import UserCreate, UserDeactiveModel
@@ -84,8 +85,8 @@ async def user_list(
         query = query.where(col == val)
         count_query = count_query.where(col == val)
 
-    db_result = await database.fetch_all(query)
-    total_count = await database.fetch_all(count_query)
+    db_result = await fetch_all_db(query)
+    total_count = await fetch_all_db(count_query)
 
     result_set = []
     for r in db_result:
@@ -138,10 +139,10 @@ async def users_list_count(
         # Fetch multiple rows
         if is_active is not None:
             query = users.select().where(users.c.is_active == is_active)
-            data = await database.fetch_all(query)
+            data = await fetch_all_db(query)
         else:
             query = users.select()
-            data = await database.fetch_all(query)
+            data = await fetch_all_db(query)
 
         result = {"count": len(data)}
         return result
@@ -164,7 +165,7 @@ async def get_user_id(
     """
     # Fetch single row
     query = users.select().where(users.c.id == user_id)
-    db_result = await database.fetch_one(query)
+    db_result = await fetch_one_db(query)
 
     if db_result is None:
         logger.warning(f"Error: ID {user_id} not found")
@@ -222,7 +223,7 @@ async def set_status_user_id(
     try:
         # Fetch single row
         query = users.update().where(users.c.user_id == values["user_id"])
-        result = await database.execute(query=query, values=values)
+        result = await execute_one_db(query=query, values=values)
         return result
     except Exception as e:
         logger.error(f"Critical Error: {e}")
@@ -252,7 +253,7 @@ async def delete_user_id(
         dict -- [result: user UUID deleted]
     """
     check_query = users.select().where(users.c.id == user_id)
-    db_result = await database.fetch_one(check_query)
+    db_result = await fetch_one_db(check_query)
 
     if db_result is None:
         logger.warning(f"Error: ID {user_id} not found")
@@ -261,7 +262,7 @@ async def delete_user_id(
     try:
         # delete id
         query = users.delete().where(users.c.user_id == user_id)
-        await database.execute(query)
+        await execute_one_db(query)
         result = {"status": f"{user_id} deleted"}
         return result
 
@@ -314,7 +315,7 @@ async def create_user(
     try:
         query = users.insert()
         values = user_information
-        await database.execute(query, values)
+        await execute_one_db(query, values)
 
         result = {
             "id": user_information["id"],
@@ -351,7 +352,7 @@ async def check_pwd(user_name: str = Form(...), password: str = Form(...)) -> di
     try:
         # Fetch single row
         query = users.select().where(users.c.user_name == user_name.lower())
-        db_result = await database.fetch_one(query)
+        db_result = await fetch_one_db(query)
         result = verify_pass(password, db_result["password"])
         logger.info(f"password validation: user: {user_name.lower()} as {result}")
         return {"result": result}
