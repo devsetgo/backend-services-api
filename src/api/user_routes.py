@@ -251,6 +251,13 @@ async def delete_user_id(
     Returns:
         dict -- [result: user UUID deleted]
     """
+    check_query = users.select().where(users.c.id == user_id)
+    db_result = await database.fetch_one(check_query)
+
+    if db_result is None:
+        logger.warning(f"Error: ID {user_id} not found")
+        raise HTTPException(status_code=404, detail="ID not found")
+
     try:
         # delete id
         query = users.delete().where(users.c.user_id == user_id)
