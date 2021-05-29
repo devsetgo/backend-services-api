@@ -35,7 +35,7 @@ jobs:
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       # - name: Override Coverage Source Path for Sonar
