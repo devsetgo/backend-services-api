@@ -10,4 +10,4 @@ pre-commit==2.12.1
 pylint==2.8.2
 pytest==6.2.4 # from 6.2.3
 pytest-cov==2.11.1
-requests-mock==1.9.2
+requests-mock==1.9.3
