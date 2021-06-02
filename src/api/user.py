@@ -13,17 +13,17 @@ user deactivate
 user unlock
 
 """
-import asyncio
 import uuid
 
-from fastapi import APIRouter, Form, Path, Query, HTTPException
+from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query
 from loguru import logger
 
-from core.db_setup import database, users
-from crud.crud_ops import fetch_one_db, fetch_all_db, execute_one_db
-from core.user_lib import encrypt_pass, verify_pass
+from api.auth import MANAGER
+from core.db_setup import users
 from core.simple_functions import get_current_datetime
-from models.user_models import UserCreate, UserDeactiveModel
+from core.user_lib import encrypt_pass, verify_pass
+from crud.common import execute_one_db, fetch_all_db, fetch_one_db
+from models.user import UserCreate, UserDeactiveModel
 
 router = APIRouter()
 
@@ -44,6 +44,7 @@ async def user_list(
     is_active: bool = Query(None, title="by active status", alias="active"),
     user_name: str = Query(None, title="User name", alias="username"),
     email: str = Query(None, title="Email", alias="email"),
+    user=Depends(MANAGER),
 ) -> dict:
 
     """
@@ -123,6 +124,7 @@ async def user_list(
 )
 async def users_list_count(
     is_active: bool = Query(None, title="by active status", alias="active"),
+    user=Depends(MANAGER),
 ) -> dict:
     """
     Count of users in the database
@@ -153,6 +155,7 @@ async def users_list_count(
 @router.get("/{userId}", tags=["users"], response_description="Get user information")
 async def get_user_id(
     user_id: str = Path(..., title="The user id to be searched for", alias="userId"),
+    user=Depends(MANAGER),
 ) -> dict:
     """
     User information for requested UUID
@@ -197,6 +200,7 @@ async def get_user_id(
 async def set_status_user_id(
     *,
     user_data: UserDeactiveModel,
+    user=Depends(MANAGER),
 ) -> dict:
     """
     Set status of a specific user UUID
@@ -241,7 +245,9 @@ async def set_status_user_id(
     },
 )
 async def delete_user_id(
-    *, user_id: str = Path(..., title="The user id to be deleted", alias="user_id")
+    *,
+    user_id: str = Path(..., title="The user id to be deleted", alias="user_id"),
+    user=Depends(MANAGER),
 ) -> dict:
     """
     Delete a user by UUID
@@ -283,7 +289,8 @@ async def delete_user_id(
 )
 async def create_user(
     *,
-    user: UserCreate,
+    user_create: UserCreate,
+    user=Depends(MANAGER),
 ) -> dict:
     """
     POST/Create a new User. user_name (unique), firstName, lastName,
@@ -297,7 +304,7 @@ async def create_user(
     Returns:
         dict -- [user_id: uuid, user_name: user_name]
     """
-    value = user.dict()
+    value = user_create.dict()
     hash_pwd = encrypt_pass(value["password"])
 
     user_information = {
@@ -338,7 +345,11 @@ async def create_user(
         500: {"description": "Mommy!"},
     },
 )
-async def check_pwd(user_name: str = Form(...), password: str = Form(...)) -> dict:
+async def check_pwd(
+    user_name: str = Form(...),
+    password: str = Form(...),
+    user=Depends(MANAGER),
+) -> dict:
     """
     Check password function
 

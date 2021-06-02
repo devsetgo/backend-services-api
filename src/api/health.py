@@ -2,11 +2,12 @@
 import datetime
 
 from cpuinfo import get_cpu_info
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import ORJSONResponse
 from loguru import logger
 from starlette_exporter import handle_metrics
 
+from api.auth import MANAGER
 from core.process_checks import get_processes
 from settings import config_settings
 
@@ -31,7 +32,7 @@ async def health_main() -> dict:
 
 
 @router.get("/system-info", tags=["system-health"])
-async def health_status() -> dict:
+async def health_status(user=Depends(MANAGER)) -> dict:
     """
     GET Request for CPU and process data
 
@@ -55,7 +56,7 @@ async def health_status() -> dict:
 
 
 @router.get("/processes", tags=["system-health"])
-async def health_processes() -> dict:
+async def health_processes(user=Depends(MANAGER)) -> dict:
     """
     GET running processes and filter by python processes
 
@@ -77,7 +78,7 @@ async def health_processes() -> dict:
 
 
 @router.get("/configuration")
-async def configuration():
+async def configuration(user=Depends(MANAGER)):
     """
     API information endpoint
 

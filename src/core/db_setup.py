@@ -8,7 +8,6 @@ from sqlalchemy import (
     JSON,
     Boolean,
     Column,
-    Date,
     DateTime,
     MetaData,
     String,
@@ -55,8 +54,10 @@ users = Table(
     Column("notes", String(length=2000)),
     Column("date_create", DateTime()),
     Column("date_updated", DateTime()),
+    Column("last_login", DateTime()),
     Column("is_active", Boolean(), default=True),
     Column("is_superuser", Boolean(), default=True),
+    Column("is_approved", Boolean(), default=False),
 )
 
 email_service = Table(

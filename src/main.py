@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 
 import uvicorn
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from loguru import logger
 from starlette.responses import RedirectResponse
 from starlette_exporter import PrometheusMiddleware, handle_metrics
 
-from api import health_routes as health
-from api import tool_routes as tools
-from api import user_routes as users
+from api import auth as auth
+from api import health as health
+from api import tool as tools
+from api import user as users
 from core.db_setup import create_db, database
 from core.logging_config import config_logging
-from settings import config_settings, Settings
+from settings import config_settings
+from crud.user import default_user
 
 # config logging start
 config_logging()
@@ -23,8 +25,8 @@ create_db()
 logger.info("API database initiated")
 # fastapi start
 app = FastAPI(
-    title="Test API",
-    description="Checklist APIs",
+    title=config_settings.title,
+    description=config_settings.description,
     version=config_settings.app_version,
     openapi_url="/openapi.json",
 )
@@ -37,6 +39,13 @@ app.add_middleware(GZipMiddleware, minimum_size=500)
 # 404
 four_zero_four = {404: {"description": "Not found"}}
 # Endpoint routers
+# User router
+app.include_router(
+    auth.router,
+    prefix="/api/v1/auth",
+    tags=["auth"],
+    responses=four_zero_four,
+)
 # User router
 app.include_router(
     users.router,
@@ -93,6 +102,10 @@ async def startup_event():
     if config_settings.prometheus_on == True:
         app.add_route("/api/health/metrics", handle_metrics)
         logger.info("prometheus route added")
+    
+    if config_settings.create_admin == True:
+        logger.warning(f"Create Admin is {config_settings.create_admin}, system will try to create default admin")
+        await default_user()
 
 
 @app.on_event("shutdown")

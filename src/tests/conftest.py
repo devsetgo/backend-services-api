@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
-import os
+
 from src.settings import Settings, config_settings
 
 config_settings.app_version = "1.2.3"

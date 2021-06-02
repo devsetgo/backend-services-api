@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import random
-import uuid
 import secrets
+import uuid
+from datetime import datetime
+
 import silly
 from devsetgo_lib.file_functions import save_json
-from datetime import datetime
 
 
 def user_test_info(save: bool = None):

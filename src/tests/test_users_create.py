@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from devsetgo_lib.file_functions import save_json
 from starlette.testclient import TestClient
 
-from devsetgo_lib.file_functions import save_json
 from src.core.gen_user import user_test_info
 from src.main import app
 
