@@ -8,14 +8,14 @@ from loguru import logger
 from starlette.responses import RedirectResponse
 from starlette_exporter import PrometheusMiddleware, handle_metrics
 
-from api import auth as auth
-from api import health as health
-from api import tool as tools
-from api import user as users
+from api import auth_routes as auth
+from api import health_routes as health
+from api import tools_routes as tools
+from api import users_routes as users
 from core.db_setup import create_db, database
 from core.logging_config import config_logging
 from settings import config_settings
-from crud.user import default_user
+from crud.users import default_user
 
 # config logging start
 config_logging()
@@ -102,9 +102,11 @@ async def startup_event():
     if config_settings.prometheus_on == True:
         app.add_route("/api/health/metrics", handle_metrics)
         logger.info("prometheus route added")
-    
+
     if config_settings.create_admin == True:
-        logger.warning(f"Create Admin is {config_settings.create_admin}, system will try to create default admin")
+        logger.warning(
+            f"Create Admin is {config_settings.create_admin}, system will try to create default admin"
+        )
         await default_user()
 
 
@@ -148,8 +150,11 @@ async def information():
         Doc/Redoc link, Lincense information, and support information
     """
     result = {
-        "app version": config_settings.app_version,
+        "title": config_settings.title,
+        "description": config_settings.description,
+        "version": config_settings.app_version,
         "environment": config_settings.release_env,
+        "updates": config_settings.updated,
     }
     return result
 

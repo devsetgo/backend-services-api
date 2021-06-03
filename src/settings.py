@@ -9,7 +9,7 @@ import secrets
 from datetime import datetime
 from functools import lru_cache
 
-from pydantic import BaseSettings, EmailStr,validator
+from pydantic import BaseSettings, EmailStr, validator
 
 
 class Settings(BaseSettings):
@@ -30,10 +30,10 @@ class Settings(BaseSettings):
     loguru_rotation: str = "100 MB"
     loguru_logging_level: str = "INFO"
     # default admin
-    create_admin:bool=False
-    admin_user_name:str = "admin"
-    admin_email:EmailStr
-    password:str="rules"
+    create_admin: bool = False
+    admin_user_name: str = "admin"
+    admin_email: EmailStr
+    password: str = "rules"
     # Config info
     updated: datetime = datetime.utcnow()
 
@@ -45,7 +45,6 @@ class Settings(BaseSettings):
     def username_alphanumeric(cls, v):
         assert v.isalnum(), "must be alphanumeric"
         return v
-
 
 
 @lru_cache()

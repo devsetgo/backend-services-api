@@ -12,8 +12,8 @@ from loguru import logger
 from core.db_setup import users
 from core.user_lib import verify_pass
 from crud.common import execute_one_db, fetch_one_db
-from models.user import RegisterOut, UserCreate
-from crud.user import last_login
+from models.users import RegisterOut, UserCreate
+from crud.users import last_login
 
 
 SECRET: str = secrets.token_urlsafe(64)

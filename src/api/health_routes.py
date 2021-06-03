@@ -7,7 +7,7 @@ from fastapi.responses import ORJSONResponse
 from loguru import logger
 from starlette_exporter import handle_metrics
 
-from api.auth import MANAGER
+from api.auth_routes import MANAGER
 from core.process_checks import get_processes
 from settings import config_settings
 

@@ -18,12 +18,12 @@ import uuid
 from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query
 from loguru import logger
 
-from api.auth import MANAGER
+from api.auth_routes import MANAGER
 from core.db_setup import users
 from core.simple_functions import get_current_datetime
 from core.user_lib import encrypt_pass, verify_pass
 from crud.common import execute_one_db, fetch_all_db, fetch_one_db
-from models.user import UserCreate, UserDeactiveModel
+from models.users import UserCreate, UserDeactiveModel
 
 router = APIRouter()
 
