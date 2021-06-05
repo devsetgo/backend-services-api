@@ -11,6 +11,10 @@ updates:
     labels:
       - "pip"
       - "dependencies"
+    commit-message:
+      # Prefix all commit messages with "npm"
+      prefix: "pip"
+      include: "scope"
     schedule:
       cron: '0 0 5 ? 1/1 SAT#1 *'
       timezone: "America/New_York"
@@ -22,6 +26,10 @@ updates:
     labels:
       - "github actions"
       - "dependencies"
+    commit-message:
+      # Prefix all commit messages with "npm"
+      prefix: "github actionts"
+      include: "scope"
     schedule:
       cron: '0 0 5 ? 1/1 SAT#1 *'
       timezone: "America/New_York"
