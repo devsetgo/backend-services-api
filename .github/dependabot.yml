@@ -2,12 +2,26 @@
 # minimum configuration for two package managers
 
 version: 2
-updates:
+updates: 
   # Enable version updates for npm
   - package-ecosystem: "pip"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/src/requirements"
     # Check the npm registry for updates every day (weekdays)
+    labels:
+      - "pip"
+      - "dependencies"
     schedule:
-      interval: "weekly"
-      day: "saturday"
+      cron: '0 0 5 ? 1/1 SAT#1 *'
+      timezone: "America/New_York"
+    # schedule:
+    #   cron: '0 0 5 ? 1/1 SAT#1 *'
+  # packages:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    labels:
+      - "github actions"
+      - "dependencies"
+    schedule:
+      cron: '0 0 5 ? 1/1 SAT#1 *'
+      timezone: "America/New_York"
