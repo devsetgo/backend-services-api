@@ -16,7 +16,9 @@ updates:
       prefix: "pip"
       include: "scope"
     schedule:
-      cron: '0 0 5 ? 1/1 SAT#1 *'
+      interval: 'monthly'
+      day: 'saturday'
+      time: "04:00"
       timezone: "America/New_York"
     # schedule:
     #   cron: '0 0 5 ? 1/1 SAT#1 *'
@@ -31,5 +33,7 @@ updates:
       prefix: "github actionts"
       include: "scope"
     schedule:
-      cron: '0 0 5 ? 1/1 SAT#1 *'
+      interval: 'monthly'
+      day: 'saturday'
+      time: "04:00"
       timezone: "America/New_York"
