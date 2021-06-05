@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from passlib.context import CryptContext
 from passlib.hash import bcrypt
 
 

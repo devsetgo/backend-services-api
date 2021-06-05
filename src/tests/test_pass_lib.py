@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from core.pass_lib import encrypt_pass, verify_pass
+from core.user_lib import encrypt_pass, verify_pass
 
 
 class Test(unittest.TestCase):

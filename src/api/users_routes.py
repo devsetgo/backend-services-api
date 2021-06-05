@@ -13,26 +13,26 @@ user deactivate
 user unlock
 
 """
-import asyncio
 import uuid
 
-from fastapi import APIRouter, Form, Path, Query
+from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query
 from loguru import logger
 
-from core.db_setup import database, users
-from core.pass_lib import encrypt_pass, verify_pass
+from api.auth_routes import MANAGER
+from core.db_setup import users
 from core.simple_functions import get_current_datetime
-from models.user_models import UserCreate, UserDeactiveModel
+from core.user_lib import encrypt_pass, verify_pass
+from crud.common import execute_one_db, fetch_all_db, fetch_one_db
+from models.users import UserCreate, UserDeactiveModel
 
 router = APIRouter()
-
 
 
 @router.get("/list", tags=["users"])
 async def user_list(
     qty: int = Query(
         None,
-        title="Quanity",
+        title="Quantity",
         description="Records to return (max 500)",
         ge=1,
         le=500,
@@ -42,20 +42,15 @@ async def user_list(
         None, title="Offset", description="Offset increment", ge=0, alias="offset"
     ),
     is_active: bool = Query(None, title="by active status", alias="active"),
-    first_name: str = Query(None, title="first name", alias="firstname"),
-    last_name: str = Query(None, title="last name", alias="lastname"),
-    title: str = Query(None, title="title", alias="title"),
-    company: str = Query(None, title="company", alias="company"),
-    city: str = Query(None, title="city", alias="city"),
-    country: str = Query(None, title="country", alias="country"),
-    postal: str = Query(None, title="postal code", alias="postal"),
+    user_name: str = Query(None, title="User name", alias="username"),
+    email: str = Query(None, title="Email", alias="email"),
+    user=Depends(MANAGER),
 ) -> dict:
 
     """
     list of users
 
     Keyword Arguments:
-        delay {int} -- [description] 0 seconds default, maximum is 122
         qty {int} -- [description] 100 returned results is default,
         maximum is 500
         offset {int} -- [description] 0 seconds default
@@ -67,33 +62,18 @@ async def user_list(
 
     """
     criteria = []
-    
+
     if qty is None:
         qty: int = 100
 
     if offset is None:
         offset: int = 0
 
-    if first_name is not None:
-        criteria.append((users.c.first_name, first_name))
+    if user_name is not None:
+        criteria.append((users.c.user_name, user_name))
 
-    if last_name is not None:
-        criteria.append((users.c.last_name, last_name))
-
-    if title is not None:
-        criteria.append((users.c.title, title))
-
-    if company is not None:
-        criteria.append((users.c.company, company))
-
-    if city is not None:
-        criteria.append((users.c.city, city))
-
-    if country is not None:
-        criteria.append((users.c.country, country))
-
-    if postal is not None:
-        criteria.append((users.c.postal, postal))
+    if email is not None:
+        criteria.append((users.c.email, email))
 
     if is_active is not None:
         criteria.append((users.c.is_active, is_active))
@@ -106,22 +86,16 @@ async def user_list(
         query = query.where(col == val)
         count_query = count_query.where(col == val)
 
-    db_result = await database.fetch_all(query)
-    total_count = await database.fetch_all(count_query)
+    db_result = await fetch_all_db(query)
+    total_count = await fetch_all_db(count_query)
 
     result_set = []
     for r in db_result:
         # iterate through data and return simplified data set
         user_data = {
-            "user_id": r["user_id"],
+            "id": r["id"],
             "user_name": r["user_name"],
-            "first_name": r["first_name"],
-            "last_name": r["last_name"],
-            "company": r["company"],
-            "title": r["title"],
-            "city": r["city"],
-            "country": r["country"],
-            "postal": r["postal"],
+            "email": r["email"],
             "is_active": r["is_active"],
         }
         result_set.append(user_data)
@@ -133,7 +107,6 @@ async def user_list(
             "total_count": len(total_count),
             "offset": offset,
             "filter": is_active,
-            "delay": delay,
         },
         "users": result_set,
     }
@@ -151,79 +124,66 @@ async def user_list(
 )
 async def users_list_count(
     is_active: bool = Query(None, title="by active status", alias="active"),
+    user=Depends(MANAGER),
 ) -> dict:
     """
     Count of users in the database
 
     Keyword Arguments:
-        delay {int} -- [description] 0 seconds default, maximum is 122
         Active {bool} -- [description] no default as not required,
         must be Active=true or false if used
 
     Returns:
         dict -- [description]
     """
-    
 
     try:
         # Fetch multiple rows
         if is_active is not None:
             query = users.select().where(users.c.is_active == is_active)
-            x = await database.fetch_all(query)
+            data = await fetch_all_db(query)
         else:
             query = users.select()
-            x = await database.fetch_all(query)
+            data = await fetch_all_db(query)
 
-        result = {"count": len(x)}
+        result = {"count": len(data)}
         return result
     except Exception as e:
         logger.error(f"Critical Error: {e}")
 
 
-@router.get("/{user_id}", tags=["users"], response_description="Get user information")
+@router.get("/{userId}", tags=["users"], response_description="Get user information")
 async def get_user_id(
-    user_id: str = Path(..., title="The user id to be searched for", alias="user_id"),
+    user_id: str = Path(..., title="The user id to be searched for", alias="userId"),
+    user=Depends(MANAGER),
 ) -> dict:
     """
     User information for requested UUID
 
     Keyword Arguments:
-        user_id {str} -- [description] UUID of user_id property required
-        delay {int} -- [description] 0 seconds default, maximum is 122
-
+        user_id {str} -- [description] UUID of id property required
 
     Returns:
         dict -- [description]
     """
-    
+    # Fetch single row
+    query = users.select().where(users.c.id == user_id)
+    db_result = await fetch_one_db(query)
 
-    try:
-        # Fetch single row
-        query = users.select().where(users.c.user_id == user_id)
-        db_result = await database.fetch_one(query)
-
+    if db_result is None:
+        logger.warning(f"Error: ID {user_id} not found")
+        raise HTTPException(status_code=404, detail="ID not found")
+    else:
         user_data = {
-            "user_id": db_result["user_id"],
+            "id": db_result["id"],
             "user_name": db_result["user_name"],
-            "first_name": db_result["first_name"],
-            "last_name": db_result["last_name"],
-            "company": db_result["company"],
-            "title": db_result["title"],
-            "address": db_result["address"],
-            "city": db_result["city"],
-            "country": db_result["country"],
-            "postal": db_result["postal"],
             "email": db_result["email"],
-            "website": db_result["website"],
-            "description": db_result["description"],
+            "notes": db_result["notes"],
             "date_create": db_result["date_create"],
             "date_updated": db_result["date_updated"],
             "is_active": db_result["is_active"],
         }
         return user_data
-
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
 
 
 @router.put(
@@ -240,13 +200,13 @@ async def get_user_id(
 async def set_status_user_id(
     *,
     user_data: UserDeactiveModel,
+    user=Depends(MANAGER),
 ) -> dict:
     """
     Set status of a specific user UUID
 
     Args:
         user_data (UserDeactiveModel): [id = UUID of user, isActive = True or False]
-        delay (int, optional): [description]. Defaults to Query( None, title=title, ge=1, le=10, alias="delay", ).
 
     Returns:
         dict: [description]
@@ -256,7 +216,6 @@ async def set_status_user_id(
 
     Keyword Arguments:
         user_id {str} -- [description] UUID of user_id property required
-        delay {int} -- [description] 0 seconds default, maximum is 122
 
     Returns:
         dict -- [description]
@@ -264,12 +223,11 @@ async def set_status_user_id(
 
     values = user_data.dict()
     values["date_updated"] = get_current_datetime()
-    
 
     try:
         # Fetch single row
         query = users.update().where(users.c.user_id == values["user_id"])
-        result = await database.execute(query=query, values=values)
+        result = await execute_one_db(query=query, values=values)
         return result
     except Exception as e:
         logger.error(f"Critical Error: {e}")
@@ -287,7 +245,9 @@ async def set_status_user_id(
     },
 )
 async def delete_user_id(
-    *, user_id: str = Path(..., title="The user id to be deleted", alias="user_id")
+    *,
+    user_id: str = Path(..., title="The user id to be deleted", alias="user_id"),
+    user=Depends(MANAGER),
 ) -> dict:
     """
     Delete a user by UUID
@@ -298,10 +258,17 @@ async def delete_user_id(
     Returns:
         dict -- [result: user UUID deleted]
     """
+    check_query = users.select().where(users.c.id == user_id)
+    db_result = await fetch_one_db(check_query)
+
+    if db_result is None:
+        logger.warning(f"Error: ID {user_id} not found")
+        raise HTTPException(status_code=404, detail="ID not found")
+
     try:
         # delete id
         query = users.delete().where(users.c.user_id == user_id)
-        await database.execute(query)
+        await execute_one_db(query)
         result = {"status": f"{user_id} deleted"}
         return result
 
@@ -310,7 +277,7 @@ async def delete_user_id(
 
 
 @router.post(
-    "/create/",
+    "/create",
     tags=["users"],
     response_description="The created item",
     responses={
@@ -322,8 +289,8 @@ async def delete_user_id(
 )
 async def create_user(
     *,
-    user: UserCreate,
-    
+    user_create: UserCreate,
+    user=Depends(MANAGER),
 ) -> dict:
     """
     POST/Create a new User. user_name (unique), firstName, lastName,
@@ -333,45 +300,34 @@ async def create_user(
         user {UserCreate} -- [description]
 
     Keyword Arguments:
-        delay {int} -- [description] 0 seconds default, maximum is 122
 
     Returns:
         dict -- [user_id: uuid, user_name: user_name]
     """
-    value = user.dict()
+    value = user_create.dict()
     hash_pwd = encrypt_pass(value["password"])
 
     user_information = {
-        "user_id": str(uuid.uuid1()),
+        "id": str(uuid.uuid1()),
         "user_name": value["user_name"].lower(),
-        "first_name": value["first_name"],
-        "last_name": value["last_name"],
-        "password": hash_pwd,
-        "title": value["title"],
-        "company": value["company"],
-        "address": value["address"],
-        "city": value["city"],
-        "country": value["country"],
-        "postal": value["postal"],
         "email": value["email"],
-        "website": value["website"],
-        "description": value["description"],
+        "notes": value["notes"],
+        "password": hash_pwd,
         "date_create": get_current_datetime(),
         "date_updated": get_current_datetime(),
         "is_active": True,
         "is_superuser": False,
     }
 
-    
-
     try:
         query = users.insert()
         values = user_information
-        await database.execute(query, values)
+        await execute_one_db(query, values)
 
         result = {
-            "user_id": user_information["user_id"],
+            "id": user_information["id"],
             "user_name": value["user_name"],
+            "is_active": True,
         }
         return result
     except Exception as e:
@@ -379,7 +335,7 @@ async def create_user(
 
 
 @router.post(
-    "/check-pwd/",
+    "/check-pwd",
     tags=["users"],
     response_description="The created item",
     responses={
@@ -389,7 +345,11 @@ async def create_user(
         500: {"description": "Mommy!"},
     },
 )
-async def check_pwd(user_name: str = Form(...), password: str = Form(...)) -> dict:
+async def check_pwd(
+    user_name: str = Form(...),
+    password: str = Form(...),
+    user=Depends(MANAGER),
+) -> dict:
     """
     Check password function
 
@@ -403,7 +363,7 @@ async def check_pwd(user_name: str = Form(...), password: str = Form(...)) -> di
     try:
         # Fetch single row
         query = users.select().where(users.c.user_name == user_name.lower())
-        db_result = await database.fetch_one(query)
+        db_result = await fetch_one_db(query)
         result = verify_pass(password, db_result["password"])
         logger.info(f"password validation: user: {user_name.lower()} as {result}")
         return {"result": result}

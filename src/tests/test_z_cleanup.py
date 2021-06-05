@@ -3,7 +3,9 @@
 # import csv
 import unittest
 
-from core.file_functions import delete_file
+from devsetgo_lib.file_functions import delete_file
+
+# delete_file(filename="test.html", data=html)
 
 
 class Test(unittest.TestCase):
@@ -13,4 +15,4 @@ class Test(unittest.TestCase):
             "test_data_users.json",
         ]
         for f in files:
-            delete_file(f)
+            delete_file(file_name=f)

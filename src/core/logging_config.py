@@ -2,13 +2,10 @@
 import logging
 from pathlib import Path
 
+import httpx
 from loguru import logger
 
-
 from settings import config_settings
-
-
-import httpx
 
 client = httpx.AsyncClient()
 

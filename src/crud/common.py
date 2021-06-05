@@ -3,13 +3,13 @@
 database simple functions. Pass query and where needed values and get result back
 """
 
-
 from loguru import logger
 
 from core.db_setup import database
 
 
 async def fetch_one_db(query):
+
     try:
         logger.debug(query)
         result = await database.fetch_one(query)

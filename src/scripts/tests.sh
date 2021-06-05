@@ -17,7 +17,7 @@ pre-commit run -a
 # bash scripts/test.sh --cov-report=html ${@}
 python3 -m pytest
 # python3 -m pytest -v -s
-sed -i "s/<source>\/home\/mike\/test-api\/src<\/source>/<source>\/github\/workspace\/src<\/source>/g" /home/mike/test-api/src/coverage.xml
+sed -i "s/<source>\/home\/mike\/backend-services-api\/src<\/source>/<source>\/github\/workspace\/backend-services-api\/src<\/source>/g" /home/mike/backend-services-api/src/coverage.xml
 # create coverage-badge
 coverage-badge -o ../coverage.svg -f
 # delete db
