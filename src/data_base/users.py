@@ -1,18 +1,20 @@
+# -*- coding: utf-8 -*-
 from core.db_setup import users
 from core.simple_functions import get_current_datetime
-from crud.common import execute_one_db,fetch_all_db
+from data_base.common import execute_one_db, fetch_all_db
 from core.user_lib import encrypt_pass
 from settings import config_settings
 from loguru import logger
 import uuid
 
+
 async def default_user():
 
     in_db_query = users.select()
     in_db_result = await fetch_all_db(in_db_query)
-    print(in_db_result)
+    logger.debug(in_db_result)
     if len(in_db_result) == 0:
-
+        logger.info(f"there are 0 users in database, creating default admin")
         hash_pwd = encrypt_pass(config_settings.password)
         values = {
             "id": str(uuid.uuid1()),
@@ -24,14 +26,19 @@ async def default_user():
             "date_updated": get_current_datetime(),
             "last_login": None,
             "is_active": True,
-            "is_superuser": True,
-            "is_approved":True,
-            }
+            "is_admin": True,
+            "is_approved": True,
+        }
         query = users.insert()
         await execute_one_db(query=query, values=values)
-        logger.warning(f"database is empty and default user {config_settings.admin_user_name} has been created")        
+        logger.warning(
+            f"database is empty and default user {config_settings.admin_user_name} has been created"
+        )
     else:
-        logger.warning(f"database is not empty and default user {config_settings.admin_user_name} has not been created")
+        logger.warning(
+            f"database is not empty and default user {config_settings.admin_user_name} has not been created"
+        )
+
 
 async def last_login(user_name: str):
     last_login = get_current_datetime()
@@ -39,4 +46,3 @@ async def last_login(user_name: str):
     query = query = users.update().where(users.c.user_name == user_name)
     await execute_one_db(query=query, values=values)
     logger.info(f"updating last login for {user_name}")
-    

@@ -2,7 +2,7 @@
 # minimum configuration for two package managers
 
 version: 2
-updates: 
+updates:
   # Enable version updates for npm
   - package-ecosystem: "pip"
     # Look for `package.json` and `lock` files in the `root` directory

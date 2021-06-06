@@ -8,6 +8,8 @@ from sqlalchemy import (
     JSON,
     Boolean,
     Column,
+    Integer,
+    String,
     DateTime,
     MetaData,
     String,
@@ -44,6 +46,9 @@ async def disconnect_db():
     logger.info("disconnecting from database")
 
 
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql.schema import ForeignKey
+
 users = Table(
     "users",
     metadata,
@@ -56,9 +61,22 @@ users = Table(
     Column("date_updated", DateTime()),
     Column("last_login", DateTime()),
     Column("is_active", Boolean(), default=True),
-    Column("is_superuser", Boolean(), default=True),
+    Column("is_admin", Boolean(), default=True),
     Column("is_approved", Boolean(), default=False),
+    # relationship("roles", back_populates="users"),
 )
+
+roles = Table(
+    "roles",
+    metadata,
+    Column("id", String(length=100), primary_key=True),
+    Column("is_active", Boolean(), default=False),
+    Column("name", String(length=50), unique=True, nullable=False),
+    Column("description", String(length=200), unique=True, nullable=False),
+    Column("id_user", String(), ForeignKey("users.id")),
+    Column("user_id", String(), ForeignKey("users.id"), nullable=False),
+)
+
 
 email_service = Table(
     "email_service",

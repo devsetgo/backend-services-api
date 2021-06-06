@@ -3,7 +3,7 @@ import secrets
 import uuid
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends,BackgroundTasks
+from fastapi import APIRouter, Depends, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
@@ -11,9 +11,9 @@ from loguru import logger
 
 from core.db_setup import users
 from core.user_lib import verify_pass
-from crud.common import execute_one_db, fetch_one_db
+from data_base.common import execute_one_db, fetch_one_db
 from models.users import RegisterOut, UserCreate
-from crud.users import last_login
+from data_base.users import last_login
 
 
 SECRET: str = secrets.token_urlsafe(64)
@@ -54,7 +54,9 @@ async def register(
 
 # remember this should be the same URL we used when initializing the LoginManager
 @router.post("/login")
-async def login(background_tasks: BackgroundTasks,data: OAuth2PasswordRequestForm = Depends()):
+async def login(
+    background_tasks: BackgroundTasks, data: OAuth2PasswordRequestForm = Depends()
+):
     # here we can use OAuth2PasswordRequestForm provided by FastAPI, so we dont have
     # to define the Dependency ourselves. More at the FastAPI docs
     # https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/#oauth2passwordrequestform
@@ -83,7 +85,10 @@ async def login(background_tasks: BackgroundTasks,data: OAuth2PasswordRequestFor
         # data is the value of the token
         # sub should be the key used to look up the user in the database later on
         # in our case thats the username, as `get_user_from_db` needs the username as a parameter
-        data={"sub": username},
+        data={
+            "sub": username,
+            "is_admin": db_result["is_admin"],
+        },
         expires=timedelta(hours=1),
     )
 

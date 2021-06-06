@@ -22,7 +22,7 @@ from api.auth_routes import MANAGER
 from core.db_setup import users
 from core.simple_functions import get_current_datetime
 from core.user_lib import encrypt_pass, verify_pass
-from crud.common import execute_one_db, fetch_all_db, fetch_one_db
+from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
 from models.users import UserCreate, UserDeactiveModel
 
 router = APIRouter()
@@ -316,7 +316,7 @@ async def create_user(
         "date_create": get_current_datetime(),
         "date_updated": get_current_datetime(),
         "is_active": True,
-        "is_superuser": False,
+        "is_admin": False,
     }
 
     try:
@@ -331,7 +331,7 @@ async def create_user(
         }
         return result
     except Exception as e:
-        logger.error(f"Critical Error: {e}")
+        logger.error(f"Insertion Error: {e}")
 
 
 @router.post(

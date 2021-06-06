@@ -23,12 +23,17 @@ class UserBaseInDB(BaseModel):
     date_create: datetime = Field(..., alias="created")
     date_updated: datetime = Field(..., alias="updated")
     is_active: bool = Field(..., alias="isActive")
-    is_superuser: bool = Field(..., alias="superUser")
+    is_admin: bool = Field(..., alias="isAdmin")
     is_approved: bool = Field(..., alias="isApproved")
 
 
+class UserAdmin(BaseModel):
+    id: UUID = Field(..., alias="id")
+    is_admin: bool = Field(..., alias="isAdmin")
+
+
 # Properties to receive via API on creation
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
     user_name: str = Field(..., alias="userName")
     email: EmailStr = Field(..., alias="email")
     password: str = Field(..., alias="password")

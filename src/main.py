@@ -15,7 +15,7 @@ from api import users_routes as users
 from core.db_setup import create_db, database
 from core.logging_config import config_logging
 from settings import config_settings
-from crud.users import default_user
+from data_base.users import default_user
 
 # config logging start
 config_logging()
@@ -23,13 +23,20 @@ logger.info("API Logging initiated")
 # database start
 create_db()
 logger.info("API database initiated")
+
 # fastapi start
 app = FastAPI(
     title=config_settings.title,
     description=config_settings.description,
     version=config_settings.app_version,
     openapi_url="/openapi.json",
+    # openapi_tags=[
+    #     "externalDocs": {
+    #     "description": "Items external docs",
+    #     "url": "https://fastapi.tiangolo.com/",
+    # },]
 )
+
 logger.info("API App initiated")
 # Add general middelware
 # Add prometheus

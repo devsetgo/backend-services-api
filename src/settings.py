@@ -15,7 +15,7 @@ from pydantic import BaseSettings, EmailStr, validator
 class Settings(BaseSettings):
     title: str = "Test API"
     description: str = "Example API to learn from."
-    app_version: str = "1.0.0"
+    app_version: str = "x.y.z"
     # application configurations
     release_env: str = "prd"
     https_on: bool = True
