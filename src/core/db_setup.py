@@ -20,15 +20,22 @@ from sqlalchemy.pool import QueuePool
 
 from settings import config_settings
 
-engine = create_engine(
-    config_settings.sqlalchemy_database_uri,
-    poolclass=QueuePool,
-    max_overflow=40,
-    pool_size=200,
-)
+if config_settings.release_env != "test":
+    engine = create_engine(
+        config_settings.sqlalchemy_database_uri,
+        poolclass=QueuePool,
+        max_overflow=40,
+        pool_size=200,
+    )
+    database = Database(config_settings.sqlalchemy_database_uri)
+else:
+    test_db = "sqlite:///sqlite_db/test.db"
+    engine = create_engine(
+        test_db,
+    )
+    database = Database(test_db)
 
 metadata = MetaData()
-database = Database(config_settings.sqlalchemy_database_uri)
 
 
 def create_db():

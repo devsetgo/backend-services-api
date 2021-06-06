@@ -21,7 +21,7 @@ sed -i "s/<source>\/home\/mike\/backend-services-api\/src<\/source>/<source>\/gi
 # create coverage-badge
 coverage-badge -o ../coverage.svg -f
 # delete db
-# rm sqlite_db/api.db
-# echo "db removed"
+rm sqlite_db/test.db
+echo "db removed"
 # generate flake8 report
 flake8 --tee . > flake8_report/report.txt
