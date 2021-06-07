@@ -8,8 +8,6 @@ from sqlalchemy import (
     JSON,
     Boolean,
     Column,
-    Integer,
-    String,
     DateTime,
     MetaData,
     String,
@@ -53,7 +51,6 @@ async def disconnect_db():
     logger.info("disconnecting from database")
 
 
-from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 
 users = Table(

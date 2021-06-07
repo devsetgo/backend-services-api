@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-import unittest
 
 from devsetgo_lib.file_functions import save_json
 from starlette.testclient import TestClient
 
 from src.core.gen_user import user_test_info
 from src.main import app
-from .conftest import bearer_session
+
 
 client = TestClient(app)
 directory_to__files: str = "data"
@@ -54,7 +53,7 @@ def test_users_post(bearer_session):
     url = f"/api/v1/users/create"
     headers = {"Authorization": "Bearer " + bearer_session}
     response = client.post(url, json=test_user, headers=headers)
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = response.json()
 
     user_data = {
@@ -73,4 +72,4 @@ def test_users_post_two(bearer_session):
         headers = {"Authorization": "Bearer " + bearer_session}
         response = client.post(url, json=test_user, headers=headers)
         save_json(f"test_user_{p}.json", test_user)
-        assert response.status_code == 200
+        assert response.status_code == 201

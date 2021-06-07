@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        case_sensitive = True
 
     @validator("admin_user_name")
     def username_alphanumeric(cls, v):
@@ -47,9 +48,12 @@ class Settings(BaseSettings):
         return v
 
 
+settings = Settings()
+
+
 @lru_cache()
 def get_settings():
-    return Settings()
+    return settings
 
 
 config_settings = get_settings()

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # import unittest
-from unittest import TestCase
 
-from starlette.testclient import TestClient
 import pytest
+from starlette.testclient import TestClient
+
 from src.main import app
 
 client = TestClient(app)

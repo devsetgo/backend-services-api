@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+
 from fastapi.testclient import TestClient
-import pytest
+
 from src import main
 from src.settings import config_settings
-from unittest import mock
 
 client = TestClient(main.app)
 

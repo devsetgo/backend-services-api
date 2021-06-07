@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
-import unittest
+import secrets
 import uuid
 
-from devsetgo_lib.file_functions import save_json
 from starlette.testclient import TestClient
 
-from src.core.gen_user import user_test_info
 from src.main import app
-import secrets
 
 client = TestClient(app)
 directory_to__files: str = "data"

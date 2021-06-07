@@ -23,7 +23,7 @@ from core.db_setup import users
 from core.simple_functions import get_current_datetime
 from core.user_lib import encrypt_pass, verify_pass
 from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
-from models.users import UserCreate, UserDeactiveModel
+from models.users import UserAdmin, UserCreate, UserDeactiveModel
 
 router = APIRouter()
 
@@ -186,100 +186,11 @@ async def get_user_id(
         return user_data
 
 
-@router.put(
-    "/status",
-    tags=["users"],
-    response_description="The created item",
-    responses={
-        302: {"description": "Incorrect URL, redirecting"},
-        404: {"description": "Operation forbidden"},
-        405: {"description": "Method not allowed"},
-        500: {"description": "Mommy!"},
-    },
-)
-async def set_status_user_id(
-    *,
-    user_data: UserDeactiveModel,
-    user=Depends(MANAGER),
-) -> dict:
-    """
-    Set status of a specific user UUID
-
-    Args:
-        user_data (UserDeactiveModel): [id = UUID of user, isActive = True or False]
-
-    Returns:
-        dict: [description]
-    """
-    """
-    Set status of a specific user UUID
-
-    Keyword Arguments:
-        user_id {str} -- [description] UUID of user_id property required
-
-    Returns:
-        dict -- [description]
-    """
-
-    values = user_data.dict()
-    values["date_updated"] = get_current_datetime()
-
-    try:
-        # Fetch single row
-        query = users.update().where(users.c.user_id == values["user_id"])
-        result = await execute_one_db(query=query, values=values)
-        return result
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
-
-
-@router.delete(
-    "/{user_id}",
-    tags=["users"],
-    response_description="The deleted item",
-    responses={
-        302: {"description": "Incorrect URL, redirecting"},
-        404: {"description": "Operation forbidden"},
-        405: {"description": "Method not allowed"},
-        500: {"description": "Mommy!"},
-    },
-)
-async def delete_user_id(
-    *,
-    user_id: str = Path(..., title="The user id to be deleted", alias="user_id"),
-    user=Depends(MANAGER),
-) -> dict:
-    """
-    Delete a user by UUID
-
-    Keyword Arguments:
-        user_id {str} -- [description] UUID of user_id property required
-
-    Returns:
-        dict -- [result: user UUID deleted]
-    """
-    check_query = users.select().where(users.c.id == user_id)
-    db_result = await fetch_one_db(check_query)
-
-    if db_result is None:
-        logger.warning(f"Error: ID {user_id} not found")
-        raise HTTPException(status_code=404, detail="ID not found")
-
-    try:
-        # delete id
-        query = users.delete().where(users.c.user_id == user_id)
-        await execute_one_db(query)
-        result = {"status": f"{user_id} deleted"}
-        return result
-
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
-
-
 @router.post(
     "/create",
     tags=["users"],
     response_description="The created item",
+    status_code=201,
     responses={
         302: {"description": "Incorrect URL, redirecting"},
         404: {"description": "Operation forbidden"},
@@ -338,6 +249,7 @@ async def create_user(
     "/check-pwd",
     tags=["users"],
     response_description="The created item",
+    status_code=201,
     responses={
         302: {"description": "Incorrect URL, redirecting"},
         404: {"description": "Operation forbidden"},
@@ -367,6 +279,132 @@ async def check_pwd(
         result = verify_pass(password, db_result["password"])
         logger.info(f"password validation: user: {user_name.lower()} as {result}")
         return {"result": result}
+
+    except Exception as e:
+        logger.error(f"Critical Error: {e}")
+
+
+@router.put(
+    "/status",
+    tags=["users"],
+    response_description="The created item",
+    responses={
+        302: {"description": "Incorrect URL, redirecting"},
+        404: {"description": "Operation forbidden"},
+        405: {"description": "Method not allowed"},
+        500: {"description": "Mommy!"},
+    },
+)
+async def set_status_user_id(
+    *,
+    user_data: UserDeactiveModel,
+    user=Depends(MANAGER),
+) -> dict:
+    """
+    Set status of a specific user UUID
+
+    Args:
+        user_data (UserDeactiveModel): [id = UUID of user, isActive = True or False]
+
+    Returns:
+        dict: [description]
+    """
+    """
+    Set status of a specific user UUID
+
+    Keyword Arguments:
+        user_id {str} -- [description] UUID of user_id property required
+
+    Returns:
+        dict -- [description]
+    """
+
+    values = user_data.dict()
+    values["date_updated"] = get_current_datetime()
+
+    try:
+        # Fetch single row
+        query = users.update().where(users.c.user_id == values["user_id"])
+        await execute_one_db(query=query, values=values)
+        result: dict = values
+        return result
+    except Exception as e:
+        logger.error(f"Critical Error: {e}")
+
+
+@router.put(
+    "/admin",
+    tags=["users"],
+    response_description="Setting admin ",
+    responses={
+        302: {"description": "Incorrect URL, redirecting"},
+        404: {"description": "Operation forbidden"},
+        405: {"description": "Method not allowed"},
+        500: {"description": "Mommy!"},
+    },
+)
+async def set_admin_user_id(
+    *,
+    user_data: UserAdmin,
+    user=Depends(MANAGER),
+) -> dict:
+
+    values = user_data.dict()
+    values["date_updated"] = get_current_datetime()
+    check_user_query = users.select().where(users.c.id == values["id"])
+    check_user_result = await fetch_one_db(query=check_user_query)
+
+    if check_user_result is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    try:
+        # Fetch single row
+        query = users.update().where(users.c.user_id == values["id"])
+        await execute_one_db(query=query, values=values)
+        result = values
+        return result
+    except Exception as e:
+        logger.error(f"Query_Error: {e}")
+
+
+@router.delete(
+    "/{user_id}",
+    tags=["users"],
+    response_description="The deleted item",
+    responses={
+        302: {"description": "Incorrect URL, redirecting"},
+        404: {"description": "Operation forbidden"},
+        405: {"description": "Method not allowed"},
+        500: {"description": "Mommy!"},
+    },
+)
+async def delete_user_id(
+    *,
+    user_id: str = Path(..., title="The user id to be deleted", alias="user_id"),
+    user=Depends(MANAGER),
+) -> dict:
+    """
+    Delete a user by UUID
+
+    Keyword Arguments:
+        user_id {str} -- [description] UUID of user_id property required
+
+    Returns:
+        dict -- [result: user UUID deleted]
+    """
+    check_query = users.select().where(users.c.id == user_id)
+    db_result = await fetch_one_db(check_query)
+
+    if db_result is None:
+        logger.warning(f"Error: ID {user_id} not found")
+        raise HTTPException(status_code=404, detail="ID not found")
+
+    try:
+        # delete id
+        query = users.delete().where(users.c.user_id == user_id)
+        await execute_one_db(query)
+        result = {"status": f"{user_id} deleted"}
+        return result
 
     except Exception as e:
         logger.error(f"Critical Error: {e}")

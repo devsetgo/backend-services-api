@@ -14,8 +14,8 @@ from api import tools_routes as tools
 from api import users_routes as users
 from core.db_setup import create_db, database
 from core.logging_config import config_logging
-from settings import config_settings
 from data_base.users import default_user
+from settings import config_settings
 
 # config logging start
 config_logging()

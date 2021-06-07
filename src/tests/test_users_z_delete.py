@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import unittest
 import uuid
 
 from devsetgo_lib.file_functions import open_json
 from starlette.testclient import TestClient
-from .conftest import bearer_session
+
 from src.main import app
+
 
 client = TestClient(app)
 

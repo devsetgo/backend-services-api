@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+import uuid
+
+from loguru import logger
+
 from core.db_setup import users
 from core.simple_functions import get_current_datetime
-from data_base.common import execute_one_db, fetch_all_db
 from core.user_lib import encrypt_pass
+from data_base.common import execute_one_db, fetch_all_db
 from settings import config_settings
-from loguru import logger
-import uuid
 
 
 async def default_user():

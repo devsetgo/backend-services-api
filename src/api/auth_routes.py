@@ -3,7 +3,7 @@ import secrets
 import uuid
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
@@ -12,9 +12,8 @@ from loguru import logger
 from core.db_setup import users
 from core.user_lib import verify_pass
 from data_base.common import execute_one_db, fetch_one_db
-from models.users import RegisterOut, UserCreate
 from data_base.users import last_login
-
+from models.users import RegisterOut, UserCreate
 
 SECRET: str = secrets.token_urlsafe(64)
 
@@ -38,7 +37,7 @@ async def get_user_from_db(username: str):
     return data
 
 
-@router.post("/register", response_model=RegisterOut)
+@router.post("/register", status_code=201, response_model=RegisterOut)
 async def register(
     create_user: UserCreate,
 ):
@@ -53,10 +52,8 @@ async def register(
 
 
 # remember this should be the same URL we used when initializing the LoginManager
-@router.post("/login")
-async def login(
-    background_tasks: BackgroundTasks, data: OAuth2PasswordRequestForm = Depends()
-):
+@router.post("/login", status_code=201)
+async def login(data: OAuth2PasswordRequestForm = Depends()):
     # here we can use OAuth2PasswordRequestForm provided by FastAPI, so we dont have
     # to define the Dependency ourselves. More at the FastAPI docs
     # https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/#oauth2passwordrequestform

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field, validator
 
@@ -16,7 +15,7 @@ class UserBase(BaseModel):
 
 class UserBaseInDB(BaseModel):
     # user_id: str = None
-    id: UUID = Field(..., alias="id")
+    id: str = Field(..., alias="id")
     user_name: str = Field(..., alias="userName")
     email: EmailStr = Field(..., alias="email")
     notes: str = Field(..., alias="notes")
@@ -28,7 +27,7 @@ class UserBaseInDB(BaseModel):
 
 
 class UserAdmin(BaseModel):
-    id: UUID = Field(..., alias="id")
+    id: str = Field(..., alias="id")
     is_admin: bool = Field(..., alias="isAdmin")
 
 
@@ -61,7 +60,7 @@ class UserCreate(BaseModel):
 
 
 class RegisterOut(BaseModel):
-    id: UUID
+    id: str
     user_name: str
     email: EmailStr
     is_approved: bool = False

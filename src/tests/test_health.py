@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-import unittest
 
 from starlette.testclient import TestClient
 
 from src.core.process_checks import get_platform
 from src.main import app
-from api.auth_routes import MANAGER
-from .conftest import bearer_session
+
 
 client = TestClient(app)
 
