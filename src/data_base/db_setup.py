@@ -57,7 +57,7 @@
 #     Column("email", String(length=200), unique=True, nullable=False),
 #     Column("password", String(length=50)),
 #     Column("notes", String(length=2000)),
-#     Column("date_create", DateTime()),
+#     Column("date_created", DateTime()),
 #     Column("date_updated", DateTime()),
 #     Column("last_login", DateTime()),
 #     Column("is_active", Boolean(), default=True),
@@ -94,7 +94,7 @@
 #     Column("id", String(length=100), primary_key=True),
 #     Column("name", String(length=100), unique=True, nullable=False),
 #     Column("description", String(length=500)),
-#     Column("date_create", DateTime()),
+#     Column("date_created", DateTime()),
 #     Column("date_update", DateTime()),
 #     Column("user_id", String(length=100)),
 # )
@@ -106,5 +106,5 @@
 #     Column("app_id", String(length=100)),
 #     Column("level", String(length=100)),
 #     Column("data", JSON()),
-#     Column("date_create", DateTime()),
+#     Column("date_created", DateTime()),
 # )

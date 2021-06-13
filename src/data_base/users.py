@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import datetime
 import uuid
-
+from datetime import timedelta, datetime
+import random
 from loguru import logger
 
-from core.db_setup import users
+from core.db_setup import users, applications
 from core.simple_functions import get_current_datetime
 from core.user_lib import encrypt_pass
 from data_base.common import execute_one_db, fetch_all_db
@@ -18,13 +20,14 @@ async def default_user():
     if len(in_db_result) == 0:
         logger.info(f"there are 0 users in database, creating default admin")
         hash_pwd = encrypt_pass(config_settings.password)
+        user_id: str = str(uuid.uuid1())
         values = {
-            "id": str(uuid.uuid1()),
+            "id": user_id,
             "user_name": config_settings.admin_user_name,
             "email": config_settings.admin_email,
             "notes": "created by default setup",
             "password": hash_pwd,
-            "date_create": get_current_datetime(),
+            "date_created": get_current_datetime(),
             "date_updated": get_current_datetime(),
             "last_login": None,
             "is_active": True,
@@ -36,6 +39,26 @@ async def default_user():
         logger.warning(
             f"database is empty and default user {config_settings.admin_user_name} has been created"
         )
+        count = 1
+        for i in range(30):
+            name: str = f"test app {count}"
+            app_values = {
+                "id": str(uuid.uuid1()),
+                "name": name,
+                "description": "a test app",
+                "user_id": user_id,
+                "is_active": True,
+                "date_created": get_current_datetime() - timedelta(days=random.randint(70,700)),
+                "date_updated": get_current_datetime(),
+            }
+            app_query = applications.insert()
+            await execute_one_db(query=app_query, values=app_values)
+            logger.info(f"creating test app {name}")
+            count += 1
+        logger.warning(
+            f"database is empty and default user {config_settings.admin_user_name} has been created"
+        )
+
     else:
         logger.warning(
             f"database is not empty and default user {config_settings.admin_user_name} has not been created"

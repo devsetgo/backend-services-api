@@ -52,7 +52,7 @@ async def register(
 
 
 # remember this should be the same URL we used when initializing the LoginManager
-@router.post("/login", status_code=201)
+@router.post("/login", status_code=200)
 async def login(data: OAuth2PasswordRequestForm = Depends()):
     # here we can use OAuth2PasswordRequestForm provided by FastAPI, so we dont have
     # to define the Dependency ourselves. More at the FastAPI docs

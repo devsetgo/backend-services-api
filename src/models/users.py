@@ -19,7 +19,7 @@ class UserBaseInDB(BaseModel):
     user_name: str = Field(..., alias="userName")
     email: EmailStr = Field(..., alias="email")
     notes: str = Field(..., alias="notes")
-    date_create: datetime = Field(..., alias="created")
+    date_created: datetime = Field(..., alias="created")
     date_updated: datetime = Field(..., alias="updated")
     is_active: bool = Field(..., alias="isActive")
     is_admin: bool = Field(..., alias="isAdmin")

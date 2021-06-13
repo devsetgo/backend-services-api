@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+TODO: Cleanup and add user api endpoints
 User routes to perform actions
 list users
 list user count
@@ -78,7 +79,7 @@ async def user_list(
     if is_active is not None:
         criteria.append((users.c.is_active, is_active))
 
-    query = users.select().order_by(users.c.date_create).limit(qty).offset(offset)
+    query = users.select().order_by(users.c.date_created).limit(qty).offset(offset)
     count_query = users.select().order_by(users.c.date_create)
 
     for crit in criteria:
@@ -349,22 +350,34 @@ async def set_admin_user_id(
     user=Depends(MANAGER),
 ) -> dict:
 
-    values = user_data.dict()
-    values["date_updated"] = get_current_datetime()
-    check_user_query = users.select().where(users.c.id == values["id"])
-    check_user_result = await fetch_one_db(query=check_user_query)
+    if user["is_admin"] == True:
 
-    if check_user_result is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        values = user_data.dict()
+        user_id = values["id"]
+        values["date_updated"] = get_current_datetime()
+        check_user_query = users.select().where(users.c.id == user_id)
+        check_user_result = await fetch_one_db(query=check_user_query)
 
-    try:
-        # Fetch single row
-        query = users.update().where(users.c.user_id == values["id"])
-        await execute_one_db(query=query, values=values)
-        result = values
-        return result
-    except Exception as e:
-        logger.error(f"Query_Error: {e}")
+        if check_user_result is None:
+            logger.warning(f"{user_id} was not found in database.")
+            raise HTTPException(status_code=404, detail="User not found")
+
+        try:
+            # Fetch single row
+            query = users.update().where(users.c.user_id == user_id)
+            await execute_one_db(query=query, values=values)
+            result = values
+            return result
+        except Exception as e:
+            logger.error(f"Query_Error: {e}")
+    else:
+        logger.warning(
+            f"user {user['id']} not authorized to access endpoint. Request rejected."
+        )
+        raise HTTPException(
+            status_code=401,
+            detail="User not authorized to make request and data logged for attempted request.",
+        )
 
 
 @router.delete(

@@ -18,7 +18,7 @@
 #     created_at = fields.DatetimeField(auto_now_add=True)
 #     modified_at = fields.DatetimeField(auto_now=True)
 #     # Column("notes", String(length=2000)),
-#     # Column("date_create", DateTime()),
+#     # Column("date_created", DateTime()),
 #     # Column("date_updated", DateTime()),
 #     # Column("last_login", DateTime()),
 #     # Column("is_active", Boolean(), default=True),

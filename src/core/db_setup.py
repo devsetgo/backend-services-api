@@ -18,14 +18,22 @@ from sqlalchemy.pool import QueuePool
 
 from settings import config_settings
 
+if config_settings.db_dialect.lower() == "postgresql":
+    database_uri: str = f"{config_settings.db_dialect}://{config_settings.db_user}:{config_settings.db_pwd}@{config_settings.db_url}/{config_settings.db_name}"
+
+elif config_settings.db_dialect.lower() == "sqlite":
+    database_uri: str = f"{config_settings.db_dialect}:///{config_settings.db_url}/{config_settings.db_name}"
+
+logger.debug(f"DB URI: {database_uri}")
+
 if config_settings.release_env != "test":
     engine = create_engine(
-        config_settings.sqlalchemy_database_uri,
+        database_uri,
         poolclass=QueuePool,
         max_overflow=40,
         pool_size=200,
     )
-    database = Database(config_settings.sqlalchemy_database_uri)
+    database = Database(database_uri)
 else:
     test_db = "sqlite:///sqlite_db/test.db"
     engine = create_engine(
@@ -61,7 +69,7 @@ users = Table(
     Column("email", String(length=200), unique=True, nullable=False),
     Column("password", String(length=50)),
     Column("notes", String(length=2000)),
-    Column("date_create", DateTime()),
+    Column("date_created", DateTime()),
     Column("date_updated", DateTime()),
     Column("last_login", DateTime()),
     Column("is_active", Boolean(), default=True),
@@ -81,6 +89,28 @@ roles = Table(
     Column("user_id", String(), ForeignKey("users.id"), nullable=False),
 )
 
+applications = Table(
+    "applications",
+    metadata,
+    Column("id", String(length=100), primary_key=True),
+    Column("name", String(length=50), unique=True, nullable=False),
+    Column("description", String(length=20)),
+    Column("user_id", String(length=50), nullable=False),
+    Column("is_active", Boolean(), default=True),
+    Column("date_created", DateTime()),
+    Column("date_updated", DateTime()),
+)
+
+audit_log = Table(
+    "audit_log",
+    metadata,
+    Column("id", String(length=100), primary_key=True),
+    Column("app_id", String(length=50)),
+    Column("record_type", String(length=20)),
+    Column("record_str", String(length=500)),
+    Column("record_json", JSON()),
+    Column("date_created", DateTime()),
+)
 
 email_service = Table(
     "email_service",
@@ -90,25 +120,4 @@ email_service = Table(
     Column("email_content", JSON()),
     Column("user_id", String(length=100)),
     Column("app_id", String(length=100)),
-)
-
-applications = Table(
-    "applications",
-    metadata,
-    Column("id", String(length=100), primary_key=True),
-    Column("name", String(length=100), unique=True, nullable=False),
-    Column("description", String(length=500)),
-    Column("date_create", DateTime()),
-    Column("date_update", DateTime()),
-    Column("user_id", String(length=100)),
-)
-
-app_log = Table(
-    "app_log",
-    metadata,
-    Column("id", String(length=100), primary_key=True),
-    Column("app_id", String(length=100)),
-    Column("level", String(length=100)),
-    Column("data", JSON()),
-    Column("date_create", DateTime()),
 )

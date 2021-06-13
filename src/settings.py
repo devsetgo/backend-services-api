@@ -20,9 +20,13 @@ class Settings(BaseSettings):
     release_env: str = "prd"
     https_on: bool = True
     prometheus_on: bool = True
-    # database_type: str = "sqlite"
-    # db_name: str = "sqlite_db/api.db"
-    sqlalchemy_database_uri: str = "sqlite:///sqlite_db/api.db"
+    # database configuration
+    db_name: str = "api.db"
+    db_dialect: str = "sqlite"
+    db_url: str = "sqlite_db"
+    db_user: str = None
+    db_pwd: str = None
+    # database_uri: str = "sqlite:///sqlite_db/api.db"
     workers: int = 2
     secret_key: str = str(secrets.token_urlsafe(256))
     # loguru settings
