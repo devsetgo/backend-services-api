@@ -43,7 +43,7 @@ async def application_list(
 
     if offset is None:
         offset: int = 0
-    
+
     if user_id is not None:
         criteria.append((applications.c.user_id, user_id, "equal"))
 
@@ -87,10 +87,10 @@ async def create_entry(*, entry: ApplicationCreate) -> dict:
     values = entry.dict()
     query = applications.select().where(applications.c.user_id == values["user_id"])
     app_check_result = await fetch_one_db(query)
-    values['id']=uuid.uuid4()
-    values['is_active']=True
-    values['date_created']=get_current_datetime()
-    values['date_updated']=get_current_datetime()
+    values["id"] = uuid.uuid4()
+    values["is_active"] = True
+    values["date_created"] = get_current_datetime()
+    values["date_updated"] = get_current_datetime()
     try:
         app_query = applications.insert()
         app_values = values
@@ -98,4 +98,3 @@ async def create_entry(*, entry: ApplicationCreate) -> dict:
         return app_values
     except Exception as e:
         logger.error(f"Insertion Error: {e}")
-

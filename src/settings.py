@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     create_admin: bool = False
     admin_user_name: str = "admin"
     admin_email: EmailStr
-    password: str = "rules"
+    admin_password: str = "rules"
     # Config info
     updated: datetime = datetime.utcnow()
 

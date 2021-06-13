@@ -26,7 +26,7 @@ def config_logging():
     cwd = Path.cwd()
     p = cwd.parent
     log_path = p.joinpath("logging").joinpath("log.log")
-    # log_path = p.joinpath("logfile").joinpath("log.log")
+
     # add new configuration
     logger.add(
         log_path,  # log file path

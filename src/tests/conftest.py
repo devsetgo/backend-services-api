@@ -4,7 +4,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from src.main import app
-from src.settings import Settings, get_settings
+from src.settings import Settings, get_settings, config_settings
 
 
 def get_settings_override() -> Settings:
@@ -19,7 +19,10 @@ def override_settings() -> None:
 @pytest.fixture(scope="session")
 def bearer_session():
     client = TestClient(app)
-    data = {"username": "johndoe", "password": "secret"}
+    data = {
+        "username": config_settings.admin_user_name,
+        "password": config_settings.admin_password,
+    }
     response = client.post("/api/v1/auth/login", data=data)
     token_data = response.json()
     return token_data["access_token"]

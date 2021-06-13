@@ -15,31 +15,33 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.pool import QueuePool
-
+from pathlib import Path
 from settings import config_settings
 
 if config_settings.db_dialect.lower() == "postgresql":
     database_uri: str = f"{config_settings.db_dialect}://{config_settings.db_user}:{config_settings.db_pwd}@{config_settings.db_url}/{config_settings.db_name}"
 
 elif config_settings.db_dialect.lower() == "sqlite":
-    database_uri: str = f"{config_settings.db_dialect}:///{config_settings.db_url}/{config_settings.db_name}"
+    cwd = Path.cwd()
+    p = cwd.parent
+
+    if config_settings.release_env != "test":
+        db_path = p.joinpath("sqlite_db").joinpath(f"{config_settings.db_name}.db")
+    else:
+        # set path for test db
+        db_path = p.joinpath("sqlite_db").joinpath("test.db")
+
+    database_uri: str = f"{config_settings.db_dialect}:///{db_path}"
 
 logger.debug(f"DB URI: {database_uri}")
 
-if config_settings.release_env != "test":
-    engine = create_engine(
-        database_uri,
-        poolclass=QueuePool,
-        max_overflow=40,
-        pool_size=200,
-    )
-    database = Database(database_uri)
-else:
-    test_db = "sqlite:///sqlite_db/test.db"
-    engine = create_engine(
-        test_db,
-    )
-    database = Database(test_db)
+engine = create_engine(
+    database_uri,
+    poolclass=QueuePool,
+    max_overflow=40,
+    pool_size=200,
+)
+database = Database(database_uri)
 
 metadata = MetaData()
 

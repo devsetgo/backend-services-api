@@ -12,10 +12,14 @@ client = TestClient(main.app)
 def test_settings():
 
     assert config_settings.app_version != None
-    assert config_settings.release_env != None
+    assert config_settings.release_env == "test"
     assert config_settings.https_on != None
     assert config_settings.prometheus_on != None
-    assert config_settings.sqlalchemy_database_uri != None
     assert config_settings.loguru_retention != None
     assert config_settings.loguru_rotation != None
     assert config_settings.workers != None
+    assert config_settings.db_name != None
+    assert config_settings.db_dialect != None
+    assert config_settings.db_url != None
+    assert config_settings.db_user != None
+    assert config_settings.db_pwd != None

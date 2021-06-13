@@ -80,7 +80,7 @@ async def user_list(
         criteria.append((users.c.is_active, is_active))
 
     query = users.select().order_by(users.c.date_created).limit(qty).offset(offset)
-    count_query = users.select().order_by(users.c.date_create)
+    count_query = users.select().order_by(users.c.date_created)
 
     for crit in criteria:
         col, val = crit
@@ -180,7 +180,7 @@ async def get_user_id(
             "user_name": db_result["user_name"],
             "email": db_result["email"],
             "notes": db_result["notes"],
-            "date_create": db_result["date_create"],
+            "date_created": db_result["date_created"],
             "date_updated": db_result["date_updated"],
             "is_active": db_result["is_active"],
         }
@@ -225,7 +225,7 @@ async def create_user(
         "email": value["email"],
         "notes": value["notes"],
         "password": hash_pwd,
-        "date_create": get_current_datetime(),
+        "date_created": get_current_datetime(),
         "date_updated": get_current_datetime(),
         "is_active": True,
         "is_admin": False,
@@ -277,12 +277,13 @@ async def check_pwd(
         # Fetch single row
         query = users.select().where(users.c.user_name == user_name.lower())
         db_result = await fetch_one_db(query)
+        logger.critical(f"user retrieve erro: {db_result}")
         result = verify_pass(password, db_result["password"])
         logger.info(f"password validation: user: {user_name.lower()} as {result}")
         return {"result": result}
 
     except Exception as e:
-        logger.error(f"Critical Error: {e}")
+        logger.error(f"Critical Error: Password Validation Error: {e}")
 
 
 @router.put(

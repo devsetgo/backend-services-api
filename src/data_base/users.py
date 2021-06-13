@@ -19,7 +19,7 @@ async def default_user():
     logger.debug(in_db_result)
     if len(in_db_result) == 0:
         logger.info(f"there are 0 users in database, creating default admin")
-        hash_pwd = encrypt_pass(config_settings.password)
+        hash_pwd = encrypt_pass(config_settings.admin_password)
         user_id: str = str(uuid.uuid1())
         values = {
             "id": user_id,
@@ -48,7 +48,8 @@ async def default_user():
                 "description": "a test app",
                 "user_id": user_id,
                 "is_active": True,
-                "date_created": get_current_datetime() - timedelta(days=random.randint(70,700)),
+                "date_created": get_current_datetime()
+                - timedelta(days=random.randint(70, 700)),
                 "date_updated": get_current_datetime(),
             }
             app_query = applications.insert()
