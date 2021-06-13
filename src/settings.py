@@ -35,9 +35,9 @@ class Settings(BaseSettings):
     loguru_logging_level: str = "INFO"
     # default admin
     create_admin: bool = False
-    admin_user_name: str = "admin"
-    admin_email: EmailStr
-    admin_password: str = "rules"
+    admin_user_name: str = None
+    admin_email: EmailStr = None
+    admin_password: str = None
     # Config info
     updated: datetime = datetime.utcnow()
 

@@ -1,6 +1,5 @@
 # ignore project files
 .env
-.env_*
 settings.json
 scratch_pad/
 .vscode
