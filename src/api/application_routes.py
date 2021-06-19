@@ -10,10 +10,10 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query
 from loguru import logger
 
 from api.auth_routes import MANAGER
-from core.db_setup import applications
+from core.db_setup import applications, users
 from core.simple_functions import get_current_datetime
 from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
-from models.applications import ApplicationCreate
+from models.applications import ApplicationCreate,ApplicationStatus
 from sqlalchemy.sql import and_
 
 router = APIRouter()
@@ -32,10 +32,14 @@ async def application_list(
     offset: int = Query(
         None, title="Offset", description="Offset increment", ge=0, alias="offset"
     ),
-    user_id: str = Query(None, title="User ID", alias="userId"),
+    is_active: bool = Query(
+        None, title="Active Status", description="The status of the application", alias="isActive"
+    ),
+    user=Depends(MANAGER)
     # user=Depends(MANAGER),
 ) -> dict:
-
+    
+    user_id = user['id']
     criteria = []
 
     if qty is None:
@@ -46,6 +50,9 @@ async def application_list(
 
     if user_id is not None:
         criteria.append((applications.c.user_id, user_id, "equal"))
+    
+    if is_active is not None:
+        criteria.append((applications.c.is_active, is_active, "equal"))
 
     query = (
         applications.select()
@@ -83,18 +90,50 @@ async def application_list(
 
 
 @router.post("/", tags=["applications"])
-async def create_entry(*, entry: ApplicationCreate) -> dict:
-    values = entry.dict()
-    query = applications.select().where(applications.c.user_id == values["user_id"])
+async def create_application(*, entry: ApplicationCreate,user=Depends(MANAGER)) -> dict:
+    user_id = user['id']
+    values:dict = entry.dict()
+    user_id:str = values["user_id"]
+    query = users.select().where(users.c.id == user_id)
     app_check_result = await fetch_one_db(query)
+
+    if app_check_result is None:
+        logger.warning(f"{user_id} was not found in database.")
+        raise HTTPException(status_code=404, detail="User not found")
+
     values["id"] = uuid.uuid4()
     values["is_active"] = True
     values["date_created"] = get_current_datetime()
     values["date_updated"] = get_current_datetime()
+
     try:
         app_query = applications.insert()
         app_values = values
         await execute_one_db(query=app_query, values=app_values)
         return app_values
     except Exception as e:
+        error:dict={"database_error": "contact support"}
         logger.error(f"Insertion Error: {e}")
+        return error
+
+@router.put("/", tags=["applications"])
+async def deactivate_application(*, entry: ApplicationStatus,user=Depends(MANAGER)) -> dict:
+    values:dict = entry.dict()
+    user_id:str = user["id"]
+    query = applications.select().where(applications.c.user_id == user_id)
+    user_check_result = await fetch_one_db(query)
+
+    if user_check_result is None:
+        logger.warning(f"{user_id} was not found in database.")
+        raise HTTPException(status_code=404, detail="User not found")
+
+    values["date_updated"] = get_current_datetime()
+    try:
+        app_query = applications.update().where(applications.c.id == values['app_id'])
+        app_values = values
+        await execute_one_db(query=app_query, values=app_values)
+        return app_values
+    except Exception as e:
+        error:dict={"database_error": "contact support"}
+        logger.error(f"Insertion Error: {e}")
+        return error

@@ -43,7 +43,7 @@ async def default_user():
         for i in range(30):
             name: str = f"test app {count}"
             app_values = {
-                "id": str(uuid.uuid1()),
+                "id": str(uuid.uuid4()),
                 "name": name,
                 "description": "a test app",
                 "user_id": user_id,

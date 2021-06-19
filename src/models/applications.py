@@ -14,4 +14,10 @@ from sqlalchemy.sql import and_
 class ApplicationCreate(BaseModel):
     app_name: str = Field(..., alias="appName", max_length=50)
     description: str = Field(None, alias="description", max_length=500)
-    user_id: str = Field(..., alias="userId", max_length=50)
+    
+
+class ApplicationStatus(BaseModel):
+    app_id: str = Field(..., alias="appId", max_length=50)
+    is_active:bool = False
+    app_name: str = Field(None, alias="appName", max_length=50)
+    description: str = Field(None, alias="description", max_length=500)
