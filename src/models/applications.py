@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from typing import Optional
+import uuid
+
 
 from pydantic import BaseModel, EmailStr, Field, validator
 from enum import Enum, IntEnum
@@ -14,10 +16,10 @@ from sqlalchemy.sql import and_
 class ApplicationCreate(BaseModel):
     app_name: str = Field(..., alias="appName", max_length=50)
     description: str = Field(None, alias="description", max_length=500)
-    
+
 
 class ApplicationStatus(BaseModel):
-    app_id: str = Field(..., alias="appId", max_length=50)
-    is_active:bool = False
-    app_name: str = Field(None, alias="appName", max_length=50)
-    description: str = Field(None, alias="description", max_length=500)
+    id: str
+    is_active: bool = False
+    name: Optional[str] = None
+    description: Optional[str] = None

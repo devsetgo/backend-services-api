@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, validator
@@ -7,25 +7,14 @@ from enum import Enum, IntEnum
 
 
 # Shared properties
-
-
-class AuditTypes(str, Enum):
-    """
-    definition of audit types
-    user, system, other, and internal
-
-    """
-
-    user = "user"
-    system = "system"
-    other = "other"
-    internal = "internal"
-
-
-class AuditLogBase(BaseModel):
+class LoggingBase(BaseModel):
     app_id: str = Field(..., alias="appId", max_length=50)
-    reference_id: str = Field(None, alias="referenceId", max_length=50)
-    record_type: AuditTypes
+    reference_id: str = Field(..., alias="referenceId", max_length=50)
+    record_date: datetime = Field(
+        None,
+        alias="recordDate",
+        example=datetime.now() - timedelta(seconds=7),
+    )
     record_str: str = Field(
         None,
         alias="recordStr",
@@ -38,7 +27,6 @@ class AuditLogBase(BaseModel):
         alias="recordJson",
         example={"data": "is free form", "user": "Bob", "thing": "did something"},
     )
-    date_created: datetime = Field(alias="dateCreated", default_factory=datetime.now())
 
     @validator("record_str")
     def record_str_blank(cls, v, values, **kwargs):

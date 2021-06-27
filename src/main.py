@@ -13,6 +13,7 @@ from api import health_routes as health
 from api import tools_routes as tools
 from api import users_routes as users
 from api import audit_routes as audit_log
+from api import logging_routes as log
 from api import application_routes as applications
 from core.db_setup import create_db, database
 from core.logging_config import config_logging
@@ -69,6 +70,13 @@ app.include_router(
     applications.router,
     prefix="/api/v1/applications",
     tags=["applications"],
+    responses=four_zero_four,
+)
+# Log router
+app.include_router(
+    log.router,
+    prefix="/api/v1/logging",
+    tags=["logging"],
     responses=four_zero_four,
 )
 # Audit Log router

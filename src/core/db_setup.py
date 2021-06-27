@@ -98,7 +98,7 @@ applications = Table(
     Column("name", String(length=50), unique=True, nullable=False),
     Column("description", String(length=20)),
     Column("user_id", String(length=50), nullable=False),
-    Column("is_active", Boolean(), default=True),
+    Column("is_active", Boolean()),
     Column("date_created", DateTime()),
     Column("date_updated", DateTime()),
 )
@@ -114,6 +114,17 @@ audit_log = Table(
     Column("date_created", DateTime()),
 )
 
+logging_info = Table(
+    "logging_info",
+    metadata,
+    Column("id", String(length=100), primary_key=True),
+    Column("app_id", String(length=50), nullable=False),
+    Column("reference_id", String(length=50), nullable=False),
+    Column("record_str", String(length=500)),
+    Column("record_json", JSON()),
+    Column("record_date", DateTime()),
+    Column("date_created", DateTime()),
+)
 email_service = Table(
     "email_service",
     metadata,

@@ -4,11 +4,12 @@ import uuid
 from datetime import timedelta, datetime
 import random
 from loguru import logger
+from sqlalchemy.sql.functions import user
 
 from core.db_setup import users, applications
 from core.simple_functions import get_current_datetime
 from core.user_lib import encrypt_pass
-from data_base.common import execute_one_db, fetch_all_db
+from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
 from settings import config_settings
 
 
@@ -72,3 +73,20 @@ async def last_login(user_name: str):
     query = query = users.update().where(users.c.user_name == user_name)
     await execute_one_db(query=query, values=values)
     logger.info(f"updating last login for {user_name}")
+
+
+# user details
+async def get_user_details(user_id: str):
+    """
+    User details minus hashed password
+    """
+    try:
+        query = users.select().where(users.c.id == user_id)
+        data = await fetch_one_db(query)
+        result=dict(data)
+        result.pop(password)
+        return result
+    except Exception as e:
+        error: dict = {"error": e}
+        logger.critical(f"error: {error}")
+        return error
