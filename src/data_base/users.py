@@ -83,7 +83,7 @@ async def get_user_details(user_id: str):
     try:
         query = users.select().where(users.c.id == user_id)
         data = await fetch_one_db(query)
-        result=dict(data)
+        result = dict(data)
         result.pop(password)
         return result
     except Exception as e:

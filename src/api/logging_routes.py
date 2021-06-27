@@ -27,6 +27,7 @@ from models.logging_models import LoggingBase
 from data_base.users import get_user_details
 from sqlalchemy import desc
 from sqlalchemy.sql import and_
+
 router = APIRouter()
 
 
@@ -100,22 +101,22 @@ async def logging_list(
     }
     return result
 
+
 # log count
 # log ID
 
+
 @router.post("/", tags=["logging"])
-async def create_log_entry(
-    *,
-    entry: LoggingBase
-    , user=Depends(MANAGER)
-) -> dict:
-    
+async def create_log_entry(*, entry: LoggingBase, user=Depends(MANAGER)) -> dict:
+
     user_id = user["id"]
     values: dict = entry.dict()
-    
-    query = applications.select().where(and_(applications.c.user_id == user_id, applications.c.id == id))
+
+    query = applications.select().where(
+        and_(applications.c.user_id == user_id, applications.c.id == id)
+    )
     app_check_result = await fetch_one_db(query)
-    
+
     if app_check_result is None:
         logger.warning(f"{user_id} was not found in database.")
         raise HTTPException(status_code=404, detail="User not found")
@@ -131,7 +132,7 @@ async def create_log_entry(
         result: dict = {"id": log_id, "status": db_status}
         return result
     except Exception as e:
-        # 
+        #
         error: dict = {"database_error": "contact support", "error": e}
         logger.error(f"Insertion Error: {error}")
         return error
