@@ -10,5 +10,5 @@ def encrypt_pass(pwd: str) -> str:
 
 def verify_pass(pwd: str, crypt_pwd: str) -> bool:
     result = bcrypt.verify(pwd, crypt_pwd)
-    logger.warning(f"warning: {result}")
+    logger.info(f"password check result is {result}")
     return result
