@@ -31,7 +31,7 @@ class Test(unittest.TestCase):
         url = f"/api/v1/tools/xml-json"
         files = {"myfile": open(file_path, "r")}
         response = client.post(url, files=files)
-        assert response.status_code == 200
+        assert response.status_code == 201
 
     def test_xml_error(self):
         file_directory = f"{directory_to__files}/testfiles"
@@ -62,7 +62,7 @@ class Test(unittest.TestCase):
         url = f"/api/v1/tools/json-xml"
         files = {"myfile": open(file_path, "r")}
         response = client.post(url, files=files)
-        assert response.status_code == 200
+        assert response.status_code == 201
 
     def test_json_error(self):
         file_directory = f"{directory_to__files}/testfiles"

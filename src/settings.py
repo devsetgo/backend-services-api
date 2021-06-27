@@ -15,14 +15,18 @@ from pydantic import BaseSettings, EmailStr, validator
 class Settings(BaseSettings):
     title: str = "Test API"
     description: str = "Example API to learn from."
-    app_version: str = "1.0.0"
+    app_version: str = "x.y.z"
     # application configurations
     release_env: str = "prd"
     https_on: bool = True
     prometheus_on: bool = True
-    database_type: str = "sqlite"
-    db_name: str = "sqlite_db/api.db"
-    sqlalchemy_database_uri: str = "sqlite:///sqlite_db/api.db"
+    # database configuration
+    db_name: str = "api.db"
+    db_dialect: str = "sqlite"
+    db_url: str = "sqlite_db"
+    db_user: str = None
+    db_pwd: str = None
+    # database_uri: str = "sqlite:///sqlite_db/api.db"
     workers: int = 2
     secret_key: str = str(secrets.token_urlsafe(256))
     # loguru settings
@@ -31,15 +35,16 @@ class Settings(BaseSettings):
     loguru_logging_level: str = "INFO"
     # default admin
     create_admin: bool = False
-    admin_user_name: str = "admin"
-    admin_email: EmailStr
-    password: str = "rules"
+    admin_user_name: str = None
+    admin_email: EmailStr = None
+    admin_password: str = None
     # Config info
     updated: datetime = datetime.utcnow()
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        allow_mutation = True
 
     @validator("admin_user_name")
     def username_alphanumeric(cls, v):

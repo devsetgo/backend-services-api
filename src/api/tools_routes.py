@@ -9,7 +9,7 @@ from xmltodict import unparse as xml_unparse
 router = APIRouter()
 
 
-@router.post("/xml-json")
+@router.post("/xml-json", status_code=201)
 async def convert_xml(
     myfile: UploadFile = File(...),
 ) -> dict:
@@ -57,7 +57,7 @@ async def convert_xml(
             raise HTTPException(status_code=400, detail=error_exception)
 
 
-@router.post("/json-xml")
+@router.post("/json-xml", status_code=201)
 async def convert_json(
     myfile: UploadFile = File(...),
 ) -> str:

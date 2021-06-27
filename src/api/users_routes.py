@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+TODO: Cleanup and add user api endpoints
 User routes to perform actions
 list users
 list user count
@@ -22,8 +23,8 @@ from api.auth_routes import MANAGER
 from core.db_setup import users
 from core.simple_functions import get_current_datetime
 from core.user_lib import encrypt_pass, verify_pass
-from crud.common import execute_one_db, fetch_all_db, fetch_one_db
-from models.users import UserCreate, UserDeactiveModel
+from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
+from models.users import UserAdmin, UserCreate, UserDeactiveModel
 
 router = APIRouter()
 
@@ -78,8 +79,8 @@ async def user_list(
     if is_active is not None:
         criteria.append((users.c.is_active, is_active))
 
-    query = users.select().order_by(users.c.date_create).limit(qty).offset(offset)
-    count_query = users.select().order_by(users.c.date_create)
+    query = users.select().order_by(users.c.date_created).limit(qty).offset(offset)
+    count_query = users.select().order_by(users.c.date_created)
 
     for crit in criteria:
         col, val = crit
@@ -179,11 +180,110 @@ async def get_user_id(
             "user_name": db_result["user_name"],
             "email": db_result["email"],
             "notes": db_result["notes"],
-            "date_create": db_result["date_create"],
+            "date_created": db_result["date_created"],
             "date_updated": db_result["date_updated"],
             "is_active": db_result["is_active"],
         }
         return user_data
+
+
+@router.post(
+    "/create",
+    tags=["users"],
+    response_description="The created item",
+    status_code=201,
+    responses={
+        302: {"description": "Incorrect URL, redirecting"},
+        404: {"description": "Operation forbidden"},
+        405: {"description": "Method not allowed"},
+        500: {"description": "Mommy!"},
+    },
+)
+async def create_user(
+    *,
+    user_create: UserCreate,
+    user=Depends(MANAGER),
+) -> dict:
+    """
+    POST/Create a new User. user_name (unique), firstName, lastName,
+    and password are required. All other fields are optional.
+
+    Arguments:
+        user {UserCreate} -- [description]
+
+    Keyword Arguments:
+
+    Returns:
+        dict -- [user_id: uuid, user_name: user_name]
+    """
+    value = user_create.dict()
+    hash_pwd = encrypt_pass(value["password"])
+
+    user_information = {
+        "id": str(uuid.uuid1()),
+        "user_name": value["user_name"].lower(),
+        "email": value["email"],
+        "notes": value["notes"],
+        "password": hash_pwd,
+        "date_created": get_current_datetime(),
+        "date_updated": get_current_datetime(),
+        "is_active": True,
+        "is_admin": False,
+    }
+
+    try:
+        query = users.insert()
+        values = user_information
+        await execute_one_db(query, values)
+
+        result = {
+            "id": user_information["id"],
+            "user_name": value["user_name"],
+            "is_active": True,
+        }
+        return result
+    except Exception as e:
+        logger.error(f"Insertion Error: {e}")
+
+
+@router.post(
+    "/check-pwd",
+    tags=["users"],
+    response_description="The created item",
+    status_code=201,
+    responses={
+        302: {"description": "Incorrect URL, redirecting"},
+        404: {"description": "Operation forbidden"},
+        405: {"description": "Method not allowed"},
+        500: {"description": "Mommy!"},
+    },
+)
+async def check_pwd(
+    user_name: str = Form(...),
+    password: str = Form(...),
+    user=Depends(MANAGER),
+) -> dict:
+    """
+    Check password function
+
+    Keyword Arguments:
+        user_name {str} -- [description] existing user_name required
+        password {str} -- [description] password required
+
+    Returns:
+        [Dict] -- [result: bool]
+    """
+    try:
+        # Fetch single row
+        query = users.select().where(users.c.user_name == user_name.lower())
+        db_result = await fetch_one_db(query)
+        logger.critical(f"user retrieve erro: {db_result}")
+        result = verify_pass(password, db_result["password"])
+        logger.info(f"password validation: user: {user_name.lower()} as {result}")
+        return {"result": result}
+
+    except Exception as e:
+        logger.error(f"Critical Error: Password Validation Error: {e}")
 
 
 @router.put(
@@ -227,10 +327,58 @@ async def set_status_user_id(
     try:
         # Fetch single row
         query = users.update().where(users.c.user_id == values["user_id"])
-        result = await execute_one_db(query=query, values=values)
+        await execute_one_db(query=query, values=values)
+        result: dict = values
         return result
     except Exception as e:
         logger.error(f"Critical Error: {e}")
+
+
+@router.put(
+    "/admin",
+    tags=["users"],
+    response_description="Setting admin ",
+    responses={
+        302: {"description": "Incorrect URL, redirecting"},
+        404: {"description": "Operation forbidden"},
+        405: {"description": "Method not allowed"},
+        500: {"description": "Mommy!"},
+    },
+)
+async def set_admin_user_id(
+    *,
+    user_data: UserAdmin,
+    user=Depends(MANAGER),
+) -> dict:
+
+    if user["is_admin"] == True:
+
+        values = user_data.dict()
+        user_id = values["id"]
+        values["date_updated"] = get_current_datetime()
+        check_user_query = users.select().where(users.c.id == user_id)
+        check_user_result = await fetch_one_db(query=check_user_query)
+
+        if check_user_result is None:
+            logger.warning(f"{user_id} was not found in database.")
+            raise HTTPException(status_code=404, detail="User not found")
+
+        try:
+            # Fetch single row
+            query = users.update().where(users.c.user_id == user_id)
+            await execute_one_db(query=query, values=values)
+            result = values
+            return result
+        except Exception as e:
+            logger.error(f"Query_Error: {e}")
+    else:
+        logger.warning(
+            f"user {user['id']} not authorized to access endpoint. Request rejected."
+        )
+        raise HTTPException(
+            status_code=401,
+            detail="User not authorized to make request and data logged for attempted request.",
+        )
 
 
 @router.delete(
@@ -271,102 +419,6 @@ async def delete_user_id(
         await execute_one_db(query)
         result = {"status": f"{user_id} deleted"}
         return result
-
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
-
-
-@router.post(
-    "/create",
-    tags=["users"],
-    response_description="The created item",
-    responses={
-        302: {"description": "Incorrect URL, redirecting"},
-        404: {"description": "Operation forbidden"},
-        405: {"description": "Method not allowed"},
-        500: {"description": "Mommy!"},
-    },
-)
-async def create_user(
-    *,
-    user_create: UserCreate,
-    user=Depends(MANAGER),
-) -> dict:
-    """
-    POST/Create a new User. user_name (unique), firstName, lastName,
-    and password are required. All other fields are optional.
-
-    Arguments:
-        user {UserCreate} -- [description]
-
-    Keyword Arguments:
-
-    Returns:
-        dict -- [user_id: uuid, user_name: user_name]
-    """
-    value = user_create.dict()
-    hash_pwd = encrypt_pass(value["password"])
-
-    user_information = {
-        "id": str(uuid.uuid1()),
-        "user_name": value["user_name"].lower(),
-        "email": value["email"],
-        "notes": value["notes"],
-        "password": hash_pwd,
-        "date_create": get_current_datetime(),
-        "date_updated": get_current_datetime(),
-        "is_active": True,
-        "is_superuser": False,
-    }
-
-    try:
-        query = users.insert()
-        values = user_information
-        await execute_one_db(query, values)
-
-        result = {
-            "id": user_information["id"],
-            "user_name": value["user_name"],
-            "is_active": True,
-        }
-        return result
-    except Exception as e:
-        logger.error(f"Critical Error: {e}")
-
-
-@router.post(
-    "/check-pwd",
-    tags=["users"],
-    response_description="The created item",
-    responses={
-        302: {"description": "Incorrect URL, redirecting"},
-        404: {"description": "Operation forbidden"},
-        405: {"description": "Method not allowed"},
-        500: {"description": "Mommy!"},
-    },
-)
-async def check_pwd(
-    user_name: str = Form(...),
-    password: str = Form(...),
-    user=Depends(MANAGER),
-) -> dict:
-    """
-    Check password function
-
-    Keyword Arguments:
-        user_name {str} -- [description] existing user_name required
-        password {str} -- [description] password required
-
-    Returns:
-        [Dict] -- [result: bool]
-    """
-    try:
-        # Fetch single row
-        query = users.select().where(users.c.user_name == user_name.lower())
-        db_result = await fetch_one_db(query)
-        result = verify_pass(password, db_result["password"])
-        logger.info(f"password validation: user: {user_name.lower()} as {result}")
-        return {"result": result}
 
     except Exception as e:
         logger.error(f"Critical Error: {e}")

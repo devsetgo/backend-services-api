@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field, validator
 
@@ -16,19 +15,24 @@ class UserBase(BaseModel):
 
 class UserBaseInDB(BaseModel):
     # user_id: str = None
-    id: UUID = Field(..., alias="id")
+    id: str = Field(..., alias="id")
     user_name: str = Field(..., alias="userName")
     email: EmailStr = Field(..., alias="email")
     notes: str = Field(..., alias="notes")
-    date_create: datetime = Field(..., alias="created")
+    date_created: datetime = Field(..., alias="created")
     date_updated: datetime = Field(..., alias="updated")
     is_active: bool = Field(..., alias="isActive")
-    is_superuser: bool = Field(..., alias="superUser")
+    is_admin: bool = Field(..., alias="isAdmin")
     is_approved: bool = Field(..., alias="isApproved")
 
 
+class UserAdmin(BaseModel):
+    id: str = Field(..., alias="id")
+    is_admin: bool = Field(..., alias="isAdmin")
+
+
 # Properties to receive via API on creation
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
     user_name: str = Field(..., alias="userName")
     email: EmailStr = Field(..., alias="email")
     password: str = Field(..., alias="password")
@@ -56,7 +60,7 @@ class UserCreate(UserBase):
 
 
 class RegisterOut(BaseModel):
-    id: UUID
+    id: str
     user_name: str
     email: EmailStr
     is_approved: bool = False
@@ -94,29 +98,3 @@ class UserDeactiveModel(BaseModel):
         title="Status of user",
         example="false",
     )
-
-
-# class Register(BaseModel):
-# user_name: str = Field(..., alias="userName")
-# password_one: str = Field(..., alias="passOne")
-# password_two: str = Field(..., alias="passTwo")
-# email: EmailStr = Field(..., alias="email")
-
-# # @validator("email")
-# # def email_reject(cls, v):
-# #     bad_domains:list = ["example.com","example.net","example.org"]
-# #     for b in bad_domains:
-# #         if b in v:
-# #             raise ValueError('Fake domains are not allowed')
-# #     return v
-
-# @validator("password_two")
-# def passwords_match(cls, v, values, **kwargs):
-#     if "password_one" in values and v != values["password_one"]:
-#         raise ValueError("passwords do not match")
-#     return v
-
-# @validator("user_name")
-# def username_alphanumeric(cls, v):
-#     assert v.isalnum(), "must be alphanumeric"
-#     return v

@@ -12,10 +12,14 @@ from api import auth_routes as auth
 from api import health_routes as health
 from api import tools_routes as tools
 from api import users_routes as users
+from api import audit_routes as audit_log
+from api import logging_routes as log
+from api import application_routes as applications
 from core.db_setup import create_db, database
 from core.logging_config import config_logging
+from data_base.users import default_user
 from settings import config_settings
-from crud.users import default_user
+from core.custom_middleware import LoggerMiddleware
 
 # config logging start
 config_logging()
@@ -23,17 +27,25 @@ logger.info("API Logging initiated")
 # database start
 create_db()
 logger.info("API database initiated")
+
 # fastapi start
 app = FastAPI(
     title=config_settings.title,
     description=config_settings.description,
     version=config_settings.app_version,
     openapi_url="/openapi.json",
+    # openapi_tags=[
+    #     "externalDocs": {
+    #     "description": "Items external docs",
+    #     "url": "https://fastapi.tiangolo.com/",
+    # },]
 )
+
 logger.info("API App initiated")
 # Add general middelware
 # Add prometheus
 app.add_middleware(PrometheusMiddleware)
+app.add_middleware(LoggerMiddleware)
 # Add GZip
 app.add_middleware(GZipMiddleware, minimum_size=500)
 # 404
@@ -51,6 +63,27 @@ app.include_router(
     users.router,
     prefix="/api/v1/users",
     tags=["users"],
+    responses=four_zero_four,
+)
+# Applications router
+app.include_router(
+    applications.router,
+    prefix="/api/v1/applications",
+    tags=["applications"],
+    responses=four_zero_four,
+)
+# Log router
+app.include_router(
+    log.router,
+    prefix="/api/v1/logging",
+    tags=["logging"],
+    responses=four_zero_four,
+)
+# Audit Log router
+app.include_router(
+    audit_log.router,
+    prefix="/api/v1/audit-log",
+    tags=["audit log"],
     responses=four_zero_four,
 )
 # Tools router

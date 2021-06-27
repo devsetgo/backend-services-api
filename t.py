@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 import time
 
 import httpx
+
+from conftest import bearer_session
 
 base_url = "http://localhost:5000/api/v1"
 
@@ -37,7 +40,7 @@ def main():
 
         t1 = time.time() - t0
         print(f"{t1:.2f}")
-        time.sleep(0.2)
+        # time.sleep(0.0002)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from passlib.context import CryptContext
 from passlib.hash import bcrypt
+from loguru import logger
 
 
 def encrypt_pass(pwd: str) -> str:
@@ -10,4 +10,5 @@ def encrypt_pass(pwd: str) -> str:
 
 def verify_pass(pwd: str, crypt_pwd: str) -> bool:
     result = bcrypt.verify(pwd, crypt_pwd)
+    logger.warning(f"warning: {result}")
     return result
