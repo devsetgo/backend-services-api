@@ -4,7 +4,7 @@ black==21.5b2 # from 21.4b2
 coverage==5.5
 coverage-badge==1.0.1
 flake8==3.9.2 # from 3.9.1
-mkdocs==1.1.2
+mkdocs==1.2.1
 mkdocs-material==7.1.6 # from 7.1.4
 pre-commit==2.13.0 # from 2.12.1
 pylint==2.8.3
