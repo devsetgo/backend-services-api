@@ -23,3 +23,8 @@ class ApplicationStatus(BaseModel):
     is_active: bool = False
     name: Optional[str] = None
     description: Optional[str] = None
+
+
+class ApplicationOut(BaseModel):
+    id: str
+    app: ApplicationCreate
