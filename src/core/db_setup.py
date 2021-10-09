@@ -2,6 +2,8 @@
 """
 Database configuration and schema
 """
+from pathlib import Path
+
 from databases import Database
 from loguru import logger
 from sqlalchemy import (
@@ -15,7 +17,7 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.pool import QueuePool
-from pathlib import Path
+
 from settings import config_settings
 
 if config_settings.db_dialect.lower() == "postgresql":

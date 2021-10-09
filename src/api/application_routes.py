@@ -3,21 +3,20 @@
 
 
 """
-from datetime import datetime, date
 import uuid
-
-from sqlalchemy.sql.expression import false
+from collections import OrderedDict
+from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query
 from loguru import logger
+from sqlalchemy.sql import and_
+from sqlalchemy.sql.expression import false
 
 from api.auth_routes import MANAGER
 from core.db_setup import applications, users
 from core.simple_functions import get_current_datetime
 from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
 from models.applications import ApplicationCreate, ApplicationStatus
-from sqlalchemy.sql import and_
-from collections import OrderedDict
 
 router = APIRouter()
 

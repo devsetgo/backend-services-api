@@ -4,7 +4,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from src.main import app
-from src.settings import Settings, get_settings, config_settings
+from src.settings import Settings, config_settings, get_settings
 
 
 def get_settings_override() -> Settings:

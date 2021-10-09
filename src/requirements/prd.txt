@@ -1,19 +1,18 @@
 aiosqlite==0.17.0
-alembic==1.7.3 # from 1.5.8
-asyncpg==0.24.0 # from 0.22.0
+alembic==1.7.4 # from 1.7.3
+asyncpg==0.24.0
 databases==0.5.2
 devsetgo-lib==0.6.0
-fastapi-login
-fastapi[all]==0.68.1 # from 0.64.0
+fastapi-login==1.7.2 # from none
+fastapi[all]==0.70.0 # from 0.68.1
 gunicorn==20.1.0
 httpx==0.19.0
 loguru==0.5.3
-orjson==3.6.3
+orjson==3.6.4 # from 3.6.3
 passlib[bcrypt]==1.7.4
 psutil==5.8.0
 py-cpuinfo==8.0.0
-python-dotenv==0.19.0
-python-jose==3.3.0
+python-dotenv==0.19.1 # from 0.19.0
 python-jose==3.3.0
 python-multipart==0.0.5
 pyyaml==5.4.1

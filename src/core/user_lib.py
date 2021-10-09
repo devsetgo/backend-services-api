@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from passlib.hash import bcrypt
 from loguru import logger
+from passlib.hash import bcrypt
 
 
 def encrypt_pass(pwd: str) -> str:
