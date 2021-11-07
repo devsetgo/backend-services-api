@@ -17,9 +17,8 @@ class Settings(BaseSettings):
     description: str = "Example API to learn from."
     app_version: str = "x.y.z"
     # application configurations
+    debug: bool = False
     release_env: str = "prd"
-    https_on: bool = True
-    prometheus_on: bool = True
     # database configuration
     db_name: str = "api.db"
     db_dialect: str = "sqlite"
@@ -28,7 +27,6 @@ class Settings(BaseSettings):
     db_pwd: str = None
     # database_uri: str = "sqlite:///sqlite_db/api.db"
     workers: int = 2
-    secret_key: str = str(secrets.token_urlsafe(256))
     # loguru settings
     loguru_retention: str = "10 days"
     loguru_rotation: str = "100 MB"
@@ -40,6 +38,12 @@ class Settings(BaseSettings):
     admin_password: str = None
     # Config info
     updated: datetime = datetime.utcnow()
+    # middleware configuration
+    max_timeout: int = 7200
+    csrf_secret = secrets.token_hex(256)
+    secret_key = secrets.token_hex(256)
+    https_on: bool = True
+    prometheus_on: bool = True
 
     class Config:
         env_file = ".env"

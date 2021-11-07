@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from typing import Optional
 import uuid
-
+from datetime import datetime
+from enum import Enum, IntEnum
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, validator
-from enum import Enum, IntEnum
+from sqlalchemy.sql import and_
+
 from core.db_setup import applications
 from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
-from sqlalchemy.sql import and_
 
 # Shared properties
 
@@ -23,3 +23,8 @@ class ApplicationStatus(BaseModel):
     is_active: bool = False
     name: Optional[str] = None
     description: Optional[str] = None
+
+
+class ApplicationOut(BaseModel):
+    id: str
+    app: ApplicationCreate

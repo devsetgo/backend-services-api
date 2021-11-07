@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from enum import Enum, IntEnum
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, validator
-from enum import Enum, IntEnum
-
 
 # Shared properties
 

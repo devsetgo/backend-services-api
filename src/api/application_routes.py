@@ -3,20 +3,20 @@
 
 
 """
-from datetime import datetime, date
 import uuid
-
-from sqlalchemy.sql.expression import false
+from collections import OrderedDict
+from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query
 from loguru import logger
+from sqlalchemy.sql import and_
+from sqlalchemy.sql.expression import false
 
 from api.auth_routes import MANAGER
 from core.db_setup import applications, users
 from core.simple_functions import get_current_datetime
 from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
 from models.applications import ApplicationCreate, ApplicationStatus
-from sqlalchemy.sql import and_
 
 router = APIRouter()
 
@@ -176,7 +176,11 @@ async def application_list(
     return result
 
 
-@router.post("/", tags=["applications"])
+@router.post(
+    "/create",
+    tags=["applications"],
+    status_code=201,
+)
 async def create_application(
     *, entry: ApplicationCreate, user=Depends(MANAGER)
 ) -> dict:
@@ -189,23 +193,27 @@ async def create_application(
         logger.warning(f"{user_id} was not found in database.")
         raise HTTPException(status_code=404, detail="User not found")
 
-    values["id"] = uuid.uuid4()
-    values["is_active"] = True
-    values["date_created"] = get_current_datetime()
-    values["date_updated"] = get_current_datetime()
+    id = uuid.uuid4()
+    data: dict = {
+        "id": id,
+        "app_name": values["app_name"],
+        "description": values["description"],
+        "is_active": True,
+        "date_created": get_current_datetime(),
+        "date_updated": get_current_datetime(),
+    }
 
     try:
         app_query = applications.insert()
-        app_values = values
-        await execute_one_db(query=app_query, values=app_values)
-        return app_values
+        await execute_one_db(query=app_query, values=data)
+        return data
     except Exception as e:
         error: dict = {"database_error": "contact support"}
         logger.error(f"Insertion Error: {e}")
         return error
 
 
-@router.put("/", tags=["applications"])
+@router.put("/deactivate", tags=["applications"])
 async def deactivate_application(
     *,
     id: str = Query(
@@ -251,7 +259,7 @@ async def deactivate_application(
     return result
 
 
-@router.delete("/", tags=["applications"])
+@router.delete("/delete", tags=["applications"])
 async def delete_application(
     *,
     id: str = Query(

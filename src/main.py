@@ -5,22 +5,18 @@ from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from loguru import logger
+from pydantic.errors import MissingError
+from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import RedirectResponse
 from starlette_exporter import PrometheusMiddleware, handle_metrics
 
-from api import auth_routes as auth
-from api import health_routes as health
-from api import tools_routes as tools
-from api import users_routes as users
-from api import audit_routes as audit_log
-from api import logging_routes as log
-from api import application_routes as applications
+import resources
+from core.custom_middleware import LoggerMiddleware
 from core.db_setup import create_db, database
 from core.logging_config import config_logging
 from data_base.users import default_user
 from settings import config_settings
-from core.custom_middleware import LoggerMiddleware
-
+from app_routes import add_routes
 # config logging start
 config_logging()
 logger.info("API Logging initiated")
@@ -28,12 +24,21 @@ logger.info("API Logging initiated")
 create_db()
 logger.info("API database initiated")
 
+if config_settings.release_env == "prd":
+    debug_value = False
+else:
+    debug_value = config_settings.debug
+
+
 # fastapi start
 app = FastAPI(
+    debug=debug_value,
     title=config_settings.title,
     description=config_settings.description,
     version=config_settings.app_version,
     openapi_url="/openapi.json",
+    on_startup=[resources.startup_events],
+    on_shutdown=[resources.shutdown_events],
     # openapi_tags=[
     #     "externalDocs": {
     #     "description": "Items external docs",
@@ -42,122 +47,39 @@ app = FastAPI(
 )
 
 logger.info("API App initiated")
-# Add general middelware
-# Add prometheus
-app.add_middleware(PrometheusMiddleware)
-app.add_middleware(LoggerMiddleware)
-# Add GZip
-app.add_middleware(GZipMiddleware, minimum_size=500)
+
 # 404
 four_zero_four = {404: {"description": "Not found"}}
-# Endpoint routers
-# User router
-app.include_router(
-    auth.router,
-    prefix="/api/v1/auth",
-    tags=["auth"],
-    responses=four_zero_four,
+
+# add middleware
+logger.info("Loading Middleware")
+# gzip middelware
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+# logger middleware
+app.add_middleware(LoggerMiddleware)
+# session middleware
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=config_settings.secret_key,
+    max_age=config_settings.max_timeout,
+    same_site="strict",
+    session_cookie="session_set",
 )
-# User router
-app.include_router(
-    users.router,
-    prefix="/api/v1/users",
-    tags=["users"],
-    responses=four_zero_four,
-)
-# Applications router
-app.include_router(
-    applications.router,
-    prefix="/api/v1/applications",
-    tags=["applications"],
-    responses=four_zero_four,
-)
-# Log router
-app.include_router(
-    log.router,
-    prefix="/api/v1/logging",
-    tags=["logging"],
-    responses=four_zero_four,
-)
-# Audit Log router
-app.include_router(
-    audit_log.router,
-    prefix="/api/v1/audit-log",
-    tags=["audit log"],
-    responses=four_zero_four,
-)
-# Tools router
-app.include_router(
-    tools.router,
-    prefix="/api/v1/tools",
-    tags=["tools"],
-    responses=four_zero_four,
-)
-# Health router
-app.include_router(
-    health.router,
-    prefix="/api/health",
-    tags=["system-health"],
-    responses=four_zero_four,
-)
+# require HTTPS
+if config_settings.https_on == True:
+    app.add_middleware(HTTPSRedirectMiddleware)
+    logger.warning(
+        f"https is set to {config_settings.https_on} and will required https connections"
+    )
+
+if config_settings.prometheus_on == True:
+    app.add_middleware(PrometheusMiddleware)
+    logger.info("prometheus middleware enabled")
+    app.add_route("/api/health/metrics", handle_metrics)
+    logger.info("prometheus route added")
 
 
-@app.on_event("startup")
-async def startup_event():
-    """
-    Startup events for application
-    """
-    try:
-        # connect to database
-        await database.connect()
-        logger.info("Connecting to database")
-
-    except Exception as e:
-        # log error
-        logger.info(f"Error: {e}")
-        logger.trace(f"tracing: {e}")
-
-    # initiate log with statement
-    if config_settings.release_env.lower() == "dev":
-        logger.debug("initiating logging for api")
-        logger.info(f"api initiated release_env: {config_settings.release_env}")
-
-    else:
-        logger.info(f"api initiated release_env: {config_settings.release_env}")
-
-    # require HTTPS
-    if config_settings.https_on == True:
-        app.add_middleware(HTTPSRedirectMiddleware)
-        logger.warning(
-            f"https is set to {config_settings.https_on} and will required https connections"
-        )
-
-    if config_settings.prometheus_on == True:
-        app.add_route("/api/health/metrics", handle_metrics)
-        logger.info("prometheus route added")
-
-    if config_settings.create_admin == True:
-        logger.warning(
-            f"Create Admin is {config_settings.create_admin}, system will try to create default admin"
-        )
-        await default_user()
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """
-    Shut down events
-    """
-    try:
-        # discount database
-        await database.disconnect()
-        logger.info("Disconnecting from database")
-    except Exception as e:
-        # log exception
-        logger.info("Error: {error}", error=e)
-        logger.trace("tracing: {exception} - {e}", error=e)
-
-    logger.info("API shutting down")
+add_routes(app)
 
 
 @app.get("/")

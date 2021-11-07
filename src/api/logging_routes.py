@@ -13,20 +13,20 @@ user deactivate
 user unlock
 
 """
-from datetime import datetime
 import uuid
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query
 from loguru import logger
-
-from api.auth_routes import MANAGER
-from core.db_setup import logging_info, users, applications
-from core.simple_functions import get_current_datetime
-from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
-from models.logging_models import LoggingBase
-from data_base.users import get_user_details
 from sqlalchemy import desc
 from sqlalchemy.sql import and_
+
+from api.auth_routes import MANAGER
+from core.db_setup import applications, logging_info, users
+from core.simple_functions import get_current_datetime
+from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
+from data_base.users import get_user_details
+from models.logging_models import LoggingBase
 
 router = APIRouter()
 

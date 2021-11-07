@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import datetime
-import uuid
-from datetime import timedelta, datetime
 import random
+import uuid
+from datetime import datetime, timedelta
+
 from loguru import logger
 from sqlalchemy.sql.functions import user
 
-from core.db_setup import users, applications
+from core.db_setup import applications, users
 from core.simple_functions import get_current_datetime
 from core.user_lib import encrypt_pass
 from data_base.common import execute_one_db, fetch_all_db, fetch_one_db

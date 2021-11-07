@@ -5,7 +5,6 @@ from starlette.testclient import TestClient
 
 from src.main import app
 
-
 client = TestClient(app)
 
 directory_to__files: str = "data"
