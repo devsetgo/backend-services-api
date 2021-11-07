@@ -5,4 +5,4 @@ set -x
 # upgrade pip
 pip3 install --upgrade pip setuptools
 # install dev dependencies
-pip3 install -r requirements/dev.txt
+pip3 install -r requirements/dev.txt --use-deprecated=legacy-resolver
