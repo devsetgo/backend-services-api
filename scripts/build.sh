@@ -5,7 +5,7 @@ set -x
 # upgrade
 # docker build -t mikeryan56/test-api -f dockerfile_pypy .
 
-CAL_VER=$(date '+%Y-%m-%d')
+CAL_VER=$(TZ=":US/Eastern" date '+%Y-%m-%d')
 echo 'Docker Build Python'
 docker build -t mikeryan56/test-api:$CAL_VER-python38 -t mikeryan56/test-api:latest -f ./dockerfiles/dockerfile_python .
 # echo "Running Docker Image"

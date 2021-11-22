@@ -17,6 +17,7 @@ from core.logging_config import config_logging
 from data_base.users import default_user
 from settings import config_settings
 from app_routes import add_routes
+
 # config logging start
 config_logging()
 logger.info("API Logging initiated")

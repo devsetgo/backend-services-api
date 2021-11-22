@@ -8,7 +8,6 @@ from api import tools_routes as tools
 from api import users_routes as users
 
 
-
 def add_routes(app):
     # 404
     four_zero_four = {404: {"description": "Not found"}}
