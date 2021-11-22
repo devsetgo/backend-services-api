@@ -7,6 +7,7 @@ from core.logging_config import config_logging
 from data_base.users import default_user
 from settings import config_settings
 
+
 async def startup_events():
     """
     Startup events for application
@@ -35,7 +36,6 @@ async def startup_events():
             f"Create Admin is {config_settings.create_admin}, system will try to create default admin"
         )
         await default_user()
-
 
 
 async def shutdown_events():
