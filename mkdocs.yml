@@ -1,12 +1,12 @@
 
-site_name: Test-Api
+site_name: Backend Services API
 # Project information
-site_name: 'Test-Api'
+site_name: 'Backend Services API'
 site_description: 'An example test-api built with FastApi'
 site_author: 'Mike Ryan'
 
-repo_name: 'devsetgo/test-api'
-repo_url: 'https://github.com/devsetgo/test-api'
+repo_name: 'devsetgo/backend-services-api'
+repo_url: 'https://github.com/devsetgo/backend-services-api'
 
 # Copyright
 copyright: 'Copyright &copy; 2016 - 2021 Mike Ryan'
