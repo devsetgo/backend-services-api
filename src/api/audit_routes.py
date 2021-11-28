@@ -13,16 +13,12 @@ user deactivate
 user unlock
 
 """
-import uuid
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query
-from loguru import logger
+from fastapi import APIRouter, Query
 
-from api.auth_routes import MANAGER
 from core.db_setup import audit_log
-from core.simple_functions import get_current_datetime
-from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
+from data_base.common import fetch_all_db
 from models.audit_log import AuditLogBase
 
 router = APIRouter()
