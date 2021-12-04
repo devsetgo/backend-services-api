@@ -5,7 +5,7 @@ black==21.11b1 # from 21.9b0
 coverage-badge==1.1.0 # from 1.0.2
 flake8==4.0.1 # from 3.9.2
 mkdocs-material==8.0.2 # from 7.3.2
-pre-commit==2.15.0
+pre-commit==2.16.0
 pylint==2.12.1
 pytest==6.2.5
 pytest-asyncio==0.16.0 # from 0.15.1
