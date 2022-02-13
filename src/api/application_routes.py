@@ -298,8 +298,10 @@ async def delete_application(
         error: dict = {"database_error": "contact support"}
         logger.error(f"Insertion Error: {e}")
         return error
+
     check_result_query = applications.select().where(applications.c.id == id)
     result = await fetch_one_db(query=check_result_query)
+
     if result is None:
         logger.info(f"id {id} deleted from the database by {user_id}")
         return {"status": "deleted"}
