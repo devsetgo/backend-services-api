@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from loguru import logger
 import pytest
 from starlette.testclient import TestClient
 
@@ -7,11 +7,15 @@ from src.main import app
 from src.settings import Settings, config_settings, get_settings
 
 
+# @pytest.fixture(scope="session")
 def get_settings_override() -> Settings:
-    return Settings(release_env="test")
+    get_settings.cache_clear()
+    get_settings(release_env="test")
+    logger.error(f"CONFIG SETTING {config_settings}")
+    return config_settings
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session")
 def override_settings() -> None:
     app.dependency_overrides[get_settings] = get_settings_override
 

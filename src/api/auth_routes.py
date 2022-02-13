@@ -22,7 +22,7 @@ router = APIRouter()
 MANAGER = LoginManager(SECRET, "/api/v1/auth/login", use_cookie=True, use_header=True)
 
 
-@MANAGER.user_loader
+@MANAGER.user_loader()
 async def get_user_from_db(username: str):
     """
     Retrieve a user from the Database
@@ -85,6 +85,7 @@ async def login(data: OAuth2PasswordRequestForm = Depends()):
         data={
             "sub": username,
             "is_admin": db_result["is_admin"],
+            "is_email_user": db_result["is_email_user"],
         },
         expires=timedelta(hours=1),
     )

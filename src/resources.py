@@ -2,8 +2,7 @@
 
 from loguru import logger
 
-from core.db_setup import create_db, database
-from core.logging_config import config_logging
+from core.db_setup import database
 from data_base.users import default_user
 from settings import config_settings
 

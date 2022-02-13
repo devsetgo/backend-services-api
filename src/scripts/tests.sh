@@ -3,7 +3,7 @@ set -e
 set -x
 
 # clear log file if it exists
-if [[ -f "~/backend-services-api/logging/log.log" ]]
+if [[ -f "~/backend-services-api/src/log/log.log" ]]
 then
     echo "Removing ~/backend-services-api/logging/log.log"
     rm ~/backend-services-api/logging/log.log
@@ -23,10 +23,10 @@ coverage-badge -o ../coverage.svg -f
 
 
 # remove test.db if it exists
-if [[ -f "~/backend-services-api/sqlite_db/test.db" ]]
+if [[ -f "~/backend-services-api/src/sqlite_db/test.db" ]]
 then
     echo "Removing ~/backend-services-api/sqlite_db/test.db"
-    rm ~/backend-services-api/sqlite_db/test.db
+    rm ~/backend-services-api/src/sqlite_db/test.db
 fi
 
 echo "db removed"
