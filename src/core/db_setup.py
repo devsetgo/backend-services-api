@@ -2,7 +2,6 @@
 """
 Database configuration and schema
 """
-from pathlib import Path
 
 from databases import Database
 from loguru import logger
@@ -17,6 +16,7 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.pool import QueuePool
+from sqlalchemy.sql.schema import ForeignKey
 
 from settings import config_settings
 
@@ -24,14 +24,16 @@ if config_settings.db_dialect.lower() == "postgresql":
     database_uri: str = f"{config_settings.db_dialect}://{config_settings.db_user}:{config_settings.db_pwd}@{config_settings.db_url}/{config_settings.db_name}"
 
 elif config_settings.db_dialect.lower() == "sqlite":
-    cwd = Path.cwd()
-    p = cwd.parent
+    # cwd = Path.cwd()
+    # p = cwd.parent
 
     if config_settings.release_env != "test":
-        db_path = p.joinpath("sqlite_db").joinpath(f"{config_settings.db_name}.db")
+        # db_path = p.joinpath("sqlite_db").joinpath(f"{config_settings.db_name}.db")
+        db_path = f"sqlite_db/{config_settings.db_name}.db"
     else:
         # set path for test db
-        db_path = p.joinpath("sqlite_db").joinpath("test.db")
+        # db_path = p.joinpath("sqlite_db").joinpath("test.db")
+        db_path = f"sqlite_db/{config_settings.db_name}.db"
 
     database_uri: str = f"{config_settings.db_dialect}:///{db_path}"
 
@@ -63,8 +65,6 @@ async def disconnect_db():
     logger.info("disconnecting from database")
 
 
-from sqlalchemy.sql.schema import ForeignKey
-
 users = Table(
     "users",
     metadata,
@@ -77,7 +77,8 @@ users = Table(
     Column("date_updated", DateTime()),
     Column("last_login", DateTime()),
     Column("is_active", Boolean(), default=True),
-    Column("is_admin", Boolean(), default=True),
+    Column("is_admin", Boolean(), default=False),
+    Column("is_email_user", Boolean(), default=False),
     Column("is_approved", Boolean(), default=False),
     # relationship("roles", back_populates="users"),
 )

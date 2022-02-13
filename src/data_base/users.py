@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-import datetime
 import random
 import uuid
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from loguru import logger
-from sqlalchemy.sql.functions import user
 
 from core.db_setup import applications, users
 from core.simple_functions import get_current_datetime

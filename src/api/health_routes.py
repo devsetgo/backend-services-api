@@ -98,14 +98,23 @@ async def configuration(user=Depends(MANAGER)):
         "number_tasks",
         "number_users",
         "number_groups",
+        "admin_email",
+        "admin_user_name",
+        "admin_password",
+        "csrf_secret",
+        "create_admin",
+        "db_user",
+        "db_pwd",
+        "db_url",
     ]
     logger.debug(f"excluding {exclude_config}")
     for e in exclude_config:
         if e in configuration:
             configuration.pop(e)
-
+    print(type(configuration))
     result = {
         # "docs": {"OpenAPI": openapi_url, "ReDoc": redoc_url},
         "configuraton": configuration,
+        # "type": type(configuration),
     }
     return result

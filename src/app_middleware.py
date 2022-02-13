@@ -2,11 +2,9 @@
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from loguru import logger
-from pydantic.errors import MissingError
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import RedirectResponse
 from starlette_exporter import PrometheusMiddleware, handle_metrics
-import resources
+
 from core.custom_middleware import LoggerMiddleware
 from settings import config_settings
 

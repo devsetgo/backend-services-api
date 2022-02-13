@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
-import uuid
-from datetime import datetime
-from enum import Enum, IntEnum
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field, validator
-from sqlalchemy.sql import and_
+from pydantic import BaseModel, Field
 
-from core.db_setup import applications
-from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
 
 # Shared properties
 

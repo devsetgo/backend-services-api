@@ -5,18 +5,16 @@ from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from loguru import logger
-from pydantic.errors import MissingError
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import RedirectResponse
 from starlette_exporter import PrometheusMiddleware, handle_metrics
 
 import resources
-from core.custom_middleware import LoggerMiddleware
-from core.db_setup import create_db, database
-from core.logging_config import config_logging
-from data_base.users import default_user
-from settings import config_settings
 from app_routes import add_routes
+from core.custom_middleware import LoggerMiddleware
+from core.db_setup import create_db
+from core.logging_config import config_logging
+from settings import config_settings
 
 # config logging start
 config_logging()
