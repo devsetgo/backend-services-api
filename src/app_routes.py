@@ -8,56 +8,81 @@ from api import tools_routes as tools
 from api import users_routes as users
 
 
+router_responses: dict = {
+    302: {"description": "The item was moved"},
+    400: {"description": "Bad request"},
+    401: {"description": "Unauthorized"},
+    403: {"description": "Insufficient privileges"},
+    404: {"description": "Not found"},
+    418: {
+        "I_am-a_teapot": "The server refuses the attempt to \
+                brew coffee with a teapot."
+    },
+    429: {"description": "Rate limit exceeded"},
+}
+
+
 def add_routes(app):
-    # 404
-    four_zero_four = {404: {"description": "Not found"}}
+    # HTTP Responses
+    router_responses: dict = {
+        302: {"description": "The item was moved"},
+        400: {"description": "Bad request"},
+        401: {"description": "Unauthorized"},
+        403: {"description": "Insufficient privileges"},
+        404: {"description": "Not found"},
+        418: {
+            "I_am-a_teapot": "The server refuses the attempt to \
+                brew coffee with a teapot."
+        },
+        429: {"description": "Rate limit exceeded"},
+    }
     # Endpoint routers
     # User router
     app.include_router(
         auth.router,
         prefix="/api/v1/auth",
         tags=["auth"],
-        responses=four_zero_four,
+        responses=router_responses,
     )
     # User router
     app.include_router(
         users.router,
         prefix="/api/v1/users",
         tags=["users"],
-        responses=four_zero_four,
+        responses=router_responses,
     )
     # Applications router
     app.include_router(
         applications.router,
         prefix="/api/v1/applications",
         tags=["applications"],
-        responses=four_zero_four,
+        responses=router_responses,
     )
     # Log router
     app.include_router(
         log.router,
         prefix="/api/v1/logging",
         tags=["logging"],
-        responses=four_zero_four,
+        responses=router_responses,
     )
     # Audit Log router
     app.include_router(
         audit_log.router,
         prefix="/api/v1/audit-log",
         tags=["audit log"],
-        responses=four_zero_four,
+        responses=router_responses,
     )
     # Tools router
     app.include_router(
         tools.router,
         prefix="/api/v1/tools",
         tags=["tools"],
-        responses=four_zero_four,
+        responses=router_responses,
     )
     # Health router
     app.include_router(
         health.router,
         prefix="/api/health",
         tags=["system-health"],
-        responses=four_zero_four,
+        responses=router_responses,
     )
