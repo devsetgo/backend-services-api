@@ -25,15 +25,27 @@ SonarCloud:
 
 Work in progress and not ready for production.
 
-## Objective
+## Objectives
+- VS Code Docker Dev Container setup
+    - [x] container
+    - [ ] env configuration
 - User Management
 - Authentication via Token
  - [x] login
  - [x] register
- - []
+ - [x] Auth Me
 - Health Endpoints (somthing like Spring Actuator)
     - [x] Health
     - [x] Config secure via Authentication
 - Tools API
  - [x] XML to JSON
  - [x] JSON to XML
+- User API
+    - [ ] GET List
+    - [ ] GET Count
+    - [ ] GET User id
+    - [ ] POST create
+    - [ ] POST check-pwd
+    - [ ] PUT status
+    - [ ] PUT admin
+    - [ ] DELET user id
