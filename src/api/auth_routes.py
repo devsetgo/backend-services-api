@@ -3,7 +3,7 @@ import secrets
 import uuid
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
@@ -41,22 +41,40 @@ async def get_user_from_db(username: str):
 async def register(
     create_user: UserCreate,
 ):
+    """
+    user registration
+    """
     create_user: dict = create_user.dict()
     create_user["id"] = uuid.uuid4()
     create_user["is_approved"] = False
 
-    query = users.insert()
-    db_result = await execute_one_db(query=query, values=create_user)
+    # check if user name is already in system
+    user_name = create_user["user_name"]
 
-    return create_user
+    check_query = users.select(users.c.user_name == user_name)
+    check_result = await fetch_one_db(check_query)
+
+    # if user name is not in system create new entry
+    if check_result is None:
+        query = users.insert()
+        db_result = await execute_one_db(query=query, values=create_user)
+        return create_user
+    else:
+        logger.warning(f"{user_id} was found in database.")
+        raise HTTPException(
+            status_code=400,
+            detail="duplicate entry is not allowed, please create a unique entry",
+        )
 
 
 # remember this should be the same URL we used when initializing the LoginManager
 @router.post("/login", status_code=200)
 async def login(data: OAuth2PasswordRequestForm = Depends()):
-    # here we can use OAuth2PasswordRequestForm provided by FastAPI, so we dont have
-    # to define the Dependency ourselves. More at the FastAPI docs
-    # https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/#oauth2passwordrequestform
+    """
+    here we can use OAuth2PasswordRequestForm provided by FastAPI, so we dont have
+    to define the Dependency ourselves. More at the FastAPI docs
+    https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/#oauth2passwordrequestform
+    """
     username = data.username
     password = data.password
 
@@ -96,13 +114,15 @@ async def login(data: OAuth2PasswordRequestForm = Depends()):
 
 @router.get("/me")
 async def logged_in_users_only(user=Depends(MANAGER)):
-    # if the request is now made from a client which has logged in and a valid access_token
-    # is either in the header or as a cookie, if cookie authorization has been
-    # set on initialization of the manager, in the Request fastapi-login will automatically
-    # provide the user object from our database to this function.
-    # for example if the 'admin' user has logged in and has the token in the headers
-    # `user` would equal {'username': 'admin', 'password': 'hashed-password'}, the same as
-    # `get_user_from_db`
+    """
+    if the request is now made from a client which has logged in and a valid access_token
+    is either in the header or as a cookie, if cookie authorization has been
+    set on initialization of the manager, in the Request fastapi-login will automatically
+    provide the user object from our database to this function.
+    for example if the 'admin' user has logged in and has the token in the headers
+    `user` would equal {'username': 'admin', 'password': 'hashed-password'}, the same as
+    'get_user_from_db`
+    """
     pop_list: list = ["password"]
     for i in pop_list:
         user.pop(i)
