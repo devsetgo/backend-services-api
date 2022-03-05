@@ -13,9 +13,13 @@ from pydantic import BaseSettings, EmailStr, validator
 
 
 class Settings(BaseSettings):
-    title: str = "Test API"
-    description: str = "Example API to learn from."
-    app_version: str = "x.y.z"
+    """
+    External and default configuration
+    """
+
+    title: str = "Backend Services API"
+    description: str = "General backend services"
+    app_version: str = "0.0.1"
     # application configurations
     debug: bool = False
     release_env: str = "prd"
@@ -32,10 +36,10 @@ class Settings(BaseSettings):
     loguru_rotation: str = "100 MB"
     loguru_logging_level: str = "INFO"
     # default admin
-    create_admin: bool = False
-    admin_user_name: str = None
-    admin_email: EmailStr = None
-    admin_password: str = None
+    create_admin: bool = True
+    admin_user_name: str = "admin"
+    admin_email: EmailStr = "admin@email.com"
+    admin_password: str = "rules"
     # Config info
     updated: datetime = datetime.utcnow()
     # middleware configuration
@@ -46,18 +50,28 @@ class Settings(BaseSettings):
     prometheus_on: bool = True
 
     class Config:
+        """
+        class configuration
+        """
+
         env_file = ".env"
         env_file_encoding = "utf-8"
         allow_mutation = True
 
     @validator("admin_user_name")
     def username_alphanumeric(cls, v):
+        """
+        confirm user name is alphanumeric
+        """
         assert v.isalnum(), "must be alphanumeric"
         return v
 
 
 @lru_cache()
 def get_settings():
+    """
+    get configuration and cache for future calls
+    """
     return Settings()
 
 
