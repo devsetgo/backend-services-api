@@ -47,7 +47,6 @@ async def user_list(
     email: str = Query(None, title="Email", alias="email"),
     user=Depends(MANAGER),
 ) -> dict:
-
     """
     list of users
 
@@ -310,8 +309,7 @@ async def set_status_user_id(
 
     Returns:
         dict: [description]
-    """
-    """
+
     Set status of a specific user UUID
 
     Keyword Arguments:
@@ -350,7 +348,9 @@ async def set_admin_user_id(
     user_data: UserAdmin,
     user=Depends(MANAGER),
 ) -> dict:
-
+    """
+    set admin property
+    """
     if user["is_admin"] == True:
 
         values = user_data.dict()
