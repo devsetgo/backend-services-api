@@ -31,7 +31,7 @@ def call_api(access_token):
 
     Returns:
         _type_: _description_
-    """    
+    """
     headers = {"Authorization": "Bearer " + access_token}
     # print(headers)
     r = httpx.get(url=f"{base_url}/users/list/count", headers=headers)
@@ -39,8 +39,7 @@ def call_api(access_token):
 
 
 def main():
-    """_summary_
-    """    
+    """_summary_"""
     t0 = time.time()
     token = get_auth()
 
