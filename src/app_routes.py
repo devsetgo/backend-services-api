@@ -73,12 +73,12 @@ def add_routes(app):
         responses=router_responses,
     )
     # Tools router
-    app.include_router(
-        tools.router,
-        prefix="/api/v1/tools",
-        tags=["tools"],
-        responses=router_responses,
-    )
+    # app.include_router(
+    #     tools.router,
+    #     prefix="/api/v1/tools",
+    #     tags=["tools"],
+    #     responses=router_responses,
+    # )
     # Health router
     app.include_router(
         health.router,
