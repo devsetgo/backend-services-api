@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from devsetgo_lib.file_functions import save_json
+from dsg_lib.file_functions import save_json
 from starlette.testclient import TestClient
 
 from src.core.gen_user import user_test_info
