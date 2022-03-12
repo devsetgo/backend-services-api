@@ -3,7 +3,7 @@
 # import csv
 import unittest
 
-from devsetgo_lib.file_functions import delete_file
+from dsg_lib.file_functions import delete_file
 
 # delete_file(filename="test.html", data=html)
 

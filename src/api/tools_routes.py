@@ -53,7 +53,7 @@ async def convert_xml(
         err = str(e)
         # when error occurs output http exception
         if err.startswith("syntax error") is True or e is not None:
-            error_exception = f"The syntax of the object is not valid. Error: {e}"
+            error_exception = f"Error: {e}"
             raise HTTPException(status_code=400, detail=error_exception)
 
 
