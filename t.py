@@ -9,6 +9,11 @@ base_url = "http://localhost:5000/api/v1"
 
 
 def get_auth():
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
     t0 = time.time()
     data = {"username": "johndoe", "password": "secret"}
     r = httpx.post(url=f"{base_url}/auth/login", data=data)
@@ -19,6 +24,14 @@ def get_auth():
 
 
 def call_api(access_token):
+    """_summary_
+
+    Args:
+        access_token (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     headers = {"Authorization": "Bearer " + access_token}
     # print(headers)
     r = httpx.get(url=f"{base_url}/users/list/count", headers=headers)
@@ -26,6 +39,8 @@ def call_api(access_token):
 
 
 def main():
+    """_summary_
+    """    
     t0 = time.time()
     token = get_auth()
 
