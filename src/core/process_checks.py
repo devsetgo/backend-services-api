@@ -31,7 +31,7 @@ def get_platform() -> dict:
     system = platform.system()
     cpu_count = multiprocessing.cpu_count()
     memory_use = sys.getsizeof({})
-    friendly_maxsize = {2**31 - 1: "32 bit", 2**63 - 1: "64 bit"}.get(
+    friendly_maxsize = {2 ** 31 - 1: "32 bit", 2 ** 63 - 1: "64 bit"}.get(
         sys.maxsize
     ) or "unknown bits"
     friendly_version = f"{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}\
