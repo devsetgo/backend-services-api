@@ -35,46 +35,62 @@ class SelectAnswerType(str, Enum):
     """
     definition of select answer types
     """
+
     yes_no = "yes_no"
     yes_no_maybe = "yes_no_maybe"
 
 
-class QuestionLocation(str, Enum):
+class QuestionType(str, Enum):
     """
     locations
 
     """
-    usa = "usa"
-    ireland = "ireland"
-    uk = "uk"
-    france = "france"
-    mexico = "mexico"
+
+    task = "task"
+    validation = "validation"
+    inquiry = "inquiry"
+
 
 class QuestionItems(BaseModel):
     """
     Question Items
     """
+
     question: str = Field(..., alias="question", max_length=500)
     text_answer: bool = Field(None, alias="textAnswer", example=True)
     text_answer_required: bool = Field(None, alias="textAnswerRequired", example=True)
     text_answer_visable: bool = Field(None, alias="textAnswerVisable", example=True)
     select_answer: bool = Field(None, alias="selectAnswer", example=True)
-    select_answer_type: SelectAnswerType = Field(None, alias="selectAnswerType", example=SelectAnswerType.yes_no)
+    select_answer_type: SelectAnswerType = Field(
+        None, alias="selectAnswerType", example=SelectAnswerType.yes_no
+    )
     select_answer_visable: bool = Field(None, alias="selectAnswerVisable", example=True)
     attachement_answer: bool = Field(None, alias="attachementAnswer", example=True)
-    attachement_answer_required: bool = Field(None, alias="attachementAnswerRequired", example=False)
-    attachement_answer_visable: bool = Field(None, alias="attachementAnswerVisable", example=True)
+    attachement_answer_required: bool = Field(
+        None, alias="attachementAnswerRequired", example=False
+    )
+    attachement_answer_visable: bool = Field(
+        None, alias="attachementAnswerVisable", example=True
+    )
+
 
 class QuestionBase(BaseModel):
     """
     Question Base
     """
-    location: QuestionLocation = Field(..., alias="location", example=QuestionLocation.uk)
+
+    location: QuestionLocation = Field(
+        ..., alias="location", example=QuestionLocation.uk
+    )
     description: str = Field(..., alias="description", max_length=500)
     question_list: list = Field(..., alias="questionList", example=[QuestionItems])
     version: str = Field(..., alias="version", example="1.0")
-    date_created: datetime = Field(..., alias="dateCreated", default_factory=datetime.utcnow())
-    date_updated: datetime = Field(..., alias="dateUpdated", default_factory=datetime.utcnow())
+    date_created: datetime = Field(
+        ..., alias="dateCreated", default_factory=datetime.utcnow()
+    )
+    date_updated: datetime = Field(
+        ..., alias="dateUpdated", default_factory=datetime.utcnow()
+    )
 
 
 # class AuditLogBase(BaseModel):
