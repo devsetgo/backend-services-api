@@ -4,7 +4,8 @@ from api import audit_routes as audit_log
 from api import auth_routes as auth
 from api import health_routes as health
 from api import logging_routes as log
-from api import tools_routes as tools
+
+# from api import tools_routes as tools
 from api import users_routes as users
 
 
@@ -73,12 +74,12 @@ def add_routes(app):
         responses=router_responses,
     )
     # Tools router
-    app.include_router(
-        tools.router,
-        prefix="/api/v1/tools",
-        tags=["tools"],
-        responses=router_responses,
-    )
+    # app.include_router(
+    #     tools.router,
+    #     prefix="/api/v1/tools",
+    #     tags=["tools"],
+    #     responses=router_responses,
+    # )
     # Health router
     app.include_router(
         health.router,
