@@ -1,7 +1,7 @@
 -r prd.txt
 #coverage==6.0.1 # from 5.5
 autopep8==1.6.0 # from 1.5.7
-black==22.1.0 # from 21.9b0
+black==22.3.0 # from 21.9b0
 coverage-badge==1.1.0 # from 1.0.2
 flake8==4.0.1 # from 3.9.2
 mkdocs-material==8.2.8 # from 7.3.2
