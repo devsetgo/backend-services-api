@@ -17,7 +17,6 @@ class Test(unittest.TestCase):
         file_directory = f"{directory_to__files}/testfiles"
         directory_path = Path.cwd().joinpath(file_directory)
         file_path = f"{directory_path}/test_sample.json"
-
         url = f"/api/v1/tools/xml-json"
         files = {"myfile": open(file_path, "r")}
         response = client.post(url, files=files)
@@ -27,7 +26,6 @@ class Test(unittest.TestCase):
         file_directory = f"{directory_to__files}/testfiles"
         directory_path = Path.cwd().joinpath(file_directory)
         file_path = f"{directory_path}/test_sample.xml"
-
         url = f"/api/v1/tools/xml-json"
         files = {"myfile": open(file_path, "r")}
         response = client.post(url, files=files)
@@ -37,7 +35,6 @@ class Test(unittest.TestCase):
         file_directory = f"{directory_to__files}/testfiles"
         directory_path = Path.cwd().joinpath(file_directory)
         file_path = f"{directory_path}/test_sample_bad.xml"
-
         url = f"/api/v1/tools/xml-json"
         files = {"myfile": open(file_path, "r")}
         response = client.post(url, files=files)
@@ -48,7 +45,6 @@ class Test(unittest.TestCase):
         file_directory = f"{directory_to__files}/testfiles"
         directory_path = Path.cwd().joinpath(file_directory)
         file_path = f"{directory_path}/test_sample.xml"
-
         url = f"/api/v1/tools/json-xml"
         files = {"myfile": open(file_path, "r")}
         response = client.post(url, files=files)
@@ -58,7 +54,6 @@ class Test(unittest.TestCase):
         file_directory = f"{directory_to__files}/testfiles"
         directory_path = Path.cwd().joinpath(file_directory)
         file_path = f"{directory_path}/test_sample.json"
-
         url = f"/api/v1/tools/json-xml"
         files = {"myfile": open(file_path, "r")}
         response = client.post(url, files=files)
@@ -68,7 +63,6 @@ class Test(unittest.TestCase):
         file_directory = f"{directory_to__files}/testfiles"
         directory_path = Path.cwd().joinpath(file_directory)
         file_path = f"{directory_path}/test_sample_bad.json"
-
         url = f"/api/v1/tools/json-xml"
         files = {"myfile": open(file_path, "r")}
         response = client.post(url, files=files)

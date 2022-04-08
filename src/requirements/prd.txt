@@ -12,6 +12,8 @@ orjson==3.6.7
 passlib[bcrypt]==1.7.4
 psutil==5.9.0
 py-cpuinfo==8.0.0
+# xmltodict==0.12.0
+python-benedict==0.25.0
 python-dotenv==0.20.0 # from 0.19.2
 python-jose==3.3.0
 python-multipart==0.0.5
@@ -19,4 +21,3 @@ pyyaml==6.0
 silly==1.1.0
 starlette-exporter==0.12.0
 unsync==1.4.0
-xmltodict==0.12.0

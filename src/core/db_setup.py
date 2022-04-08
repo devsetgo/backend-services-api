@@ -3,6 +3,7 @@
 Database configuration and schema
 """
 
+from ast import Str
 from databases import Database
 from loguru import logger
 from sqlalchemy import (
@@ -14,6 +15,7 @@ from sqlalchemy import (
     String,
     Table,
     create_engine,
+    Integer,
 )
 from sqlalchemy.pool import QueuePool
 from sqlalchemy.sql.schema import ForeignKey
@@ -137,3 +139,37 @@ email_service = Table(
     Column("user_id", String(length=100)),
     Column("app_id", String(length=100)),
 )
+question_service = Table(
+    "question_service",
+    metadata,
+    Column("id", String(length=100), primary_key=True),
+    Column("type", String(length=100)),
+    Column("question", String(length=500)),
+    Column("description", String(length=500)),
+    Column("text_options", String(length=50)),
+    Column("select_options", String(length=50)),
+    Column("attachement_options", String(length=50)),
+    Column("version", Integer(), default=1),
+    Column("is_active", Boolean(), default=False),
+    Column("is_approved", Boolean(), default=False),
+    Column("date_created", DateTime()),
+    Column("date_updated", DateTime()),
+    Column("created_by", String(length=100)),
+    Column("updated_by", String(length=100)),
+)
+
+# task_service = Table(
+#     "task_service",
+#     metadata,
+#     Column("id", String(length=100), primary_key=True),
+#     Column("question_reference", String(length=100), nullable=False),
+#     Column("question_json", JSON(), nullable=False),
+#     Column("text_answer", String(length=500)),
+#     Column("select_answer", String(length=500)),
+#     Column("text_answer", String(length=500)),
+#     Column("completed", String(length=500)),
+#     Column("date_created", DateTime()),
+#     Column("date_updated", DateTime()),
+#     Column("assigned_to", String(length=100)),
+#     Column("updated_by", String(length=100)),
+# )
