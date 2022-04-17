@@ -10,6 +10,8 @@ from starlette_exporter import handle_metrics
 from api.auth_routes import MANAGER
 from core.process_checks import get_processes
 from settings import config_settings
+from core.db_setup import users
+from data_base.common import execute_one_db, fetch_all_db, fetch_one_db
 
 router = APIRouter()
 
@@ -19,7 +21,7 @@ router = APIRouter()
 router.add_route("/metrics", handle_metrics)
 
 
-@router.get("/status", tags=["system-health"], response_class=ORJSONResponse)
+@router.get("/status", tags=["system-health"],) # response_class=ORJSONResponse)
 async def health_main() -> dict:
     """
     GET status, uptime, and current datetime
@@ -27,7 +29,14 @@ async def health_main() -> dict:
     Returns:
         dict -- [status: UP, uptime: seconds current_datetime: datetime.now]
     """
-    result: dict = {"status": "UP"}
+    count_query = users.select().order_by(users.c.date_created)
+    total_count = await fetch_all_db(count_query)
+    if isinstance(len(total_count), int):
+        db_up = "connected"
+    else:
+        db_up = "no connection"
+
+    result: dict = {"status": "UP", "database_status": db_up}
     return result
 
 
