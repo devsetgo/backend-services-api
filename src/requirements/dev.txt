@@ -3,10 +3,10 @@
 autopep8==1.6.0 # from 1.5.7
 black==22.6.0 # from 21.9b0
 coverage-badge==1.1.0 # from 1.0.2
-flake8==5.0.3 # from 3.9.2
+flake8==5.0.4 # from 3.9.2
 mkdocs-material==8.3.9 # from 7.3.2
 pre-commit==2.20.0
-pylint==2.14.5
+pylint==2.15.0
 pytest==7.1.2
 pytest-asyncio==0.19.0 # from 0.15.1
 pytest-cov==3.0.0
